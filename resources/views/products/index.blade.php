@@ -24,9 +24,8 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Produto</th>
                             <th>Código</th>
-                            <th>Preço</th>
+                            <th>Produto</th>
                             <th>Açoes</th>
                         </tr>
                         </thead>
@@ -54,13 +53,14 @@
                 },
                 columns: [
                     {data: 'id'},
-                    {data: 'produto'},
                     {data: 'codigo'},
-                    {data: 'preco_venda'},
+                    {data: 'product'},
                     {
                         "render": function (data, type, row) {
-                            return `<a title="View" class="btn btn-sm btn-danger mr-1" href="#"> <i class="fas fa-ban"></i> </a>` +
-                                `<a title="View" class="btn btn-sm btn-success" href="#"> <i class="fas fa-download"></i> </a>`
+                            return ``+
+                                `<a title="Delete" class="btn btn-sm btn-danger mr-1" href="#"> <i class="fas fa-trash-alt"></i> </a>` +
+                                `<a title="Alterar" class="btn btn-sm btn-primary mr-1" href="/products/${row.id}/edit"> <i class="fas fa-edit"></i> </a>` +
+                                `<a title="Vizualizar" class="btn btn-sm btn-info mr-1" href="{{route('products.show', '')}}/${row.id}"> <i class="fas fa-eye"></i> </a>`
                         }
                     }
                 ]

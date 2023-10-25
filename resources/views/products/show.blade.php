@@ -14,15 +14,6 @@
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Vizualizar Registro</h6>
 
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
             </div>
 
             <div class="card-body">
@@ -31,53 +22,63 @@
                     @method('put')
 
                     <div class="form-row">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-2">
+                            <label for="">Código* </label>
+                            <input type="text" class="form-control" name="codigo" id="codigo" value="{{$product->codigo}}" >
+                            @if($errors->has('codigo'))
+                                <div class="text-danger" style="font-size: 12px">
+                                    {{ $errors->first('codigo') }}
+                                </div>
+
+                            @endif
+
+                        </div>
+
+                        <div class="form-group col-md-10">
                             <label for="">Produto* </label>
-                            <input readonly type="text" class="form-control" name="produto" value="{{$product->produto}}">
+                            <input type="text" class="form-control" name="product" value="{{$product->product}}">
+                            @if($errors->has('product'))
+                                <div class="text-danger" style="font-size: 12px">
+                                    {{ $errors->first('product') }}
+                                </div>
+
+                            @endif
                         </div>
-                        <div class="form-group col-md-3">
-                            <label for="">Preço Compra* </label>
-                            <input readonly type="text" class="form-control dinheiro" name="preco_compra" value="{{$product->preco_compra}}">
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="">Preço Venda* </label>
-                            <input readonly type="text" class="form-control dinheiro" name="preco_venda" value="{{$product->preco_venda}}">
-                        </div>
+
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label for="">Código* </label>
-                            <input readonly type="text" class="form-control" name="codigo" value="{{$product->codigo}}">
-                        </div>
 
-                        <div class="form-group col-md-2">
-                            <label for="">Unidade* </label>
-                            <select disabled class="form-control" name="units_id">
+
+                        <div class="form-group col-md-6">
+                            <label for="">Regime IVA</label>
+                            <select class="form-control" name="regimes_id">
                                 <option value="">-- selecione --</option>
-                                @foreach($units as $unity)
-                                    <option {{($product->units_id == $unity->id)? 'selected' : ''}} value="{{$unity->id}}">{{$unity->unidade}}</option>
-                                @endforeach
-                            </select>
-
-                        </div>
-
-                        <div class="form-group col-md-3">
-                            <label for="">Categoria*</label>
-                            <select disabled class="form-control" name="categories_id">
-                                <option value="">-- selecione --</option>
-                                @foreach($categories as $category)
-                                    <option {{($product->categories_id == $category->id)? 'selected' : ''}} value="{{$category->id}}">{{$category->categoria}}</option>
+                                @foreach($regimes as $regime)
+                                    <option
+                                        {{($product->regimes_id==$regime->id)? 'selected' : ''}} value="{{$regime->id}}">{{$regime->motivo}}</option>
                                 @endforeach
                             </select>
 
                         </div>
 
                         <div class="form-group col-md-2">
-                            <label for="">Tipo*</label>
-                            <select disabled class="form-control" name="tipo">
+                            <label for="">Unidade </label>
+                            <select class="form-control" name="unidades_id">
                                 <option value="">-- selecione --</option>
-                                <option {{($product->tipo == 'P')? 'selected' : ''}} value="P">Produto</option>
+                                @foreach($unidades as $unidade)
+                                    <option
+                                        {{($product->unidades_id==$unidade->id)? 'selected' : ''}} value="{{$unidade->id}}">{{$unidade->unidade}}</option>
+                                @endforeach
+                            </select>
+
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="">Tipo</label>
+                            <select class="form-control" name="tipo">
+                                <option value="">-- selecione --</option>
+                                <option {{($product->tipo ==='P')? 'selected' : ''}}  value="P">Produto</option>
                                 <option {{($product->tipo == 'S')? 'selected' : ''}}  value="S">Serviço</option>
 
                             </select>
@@ -85,10 +86,12 @@
                         </div>
 
                         <div class="form-group col-md-2">
-                            <label for="">Validade </label>
-                            <input readonly type="date" class="form-control" name="validade" value="{{$product->validade}}">
+                            <label for="">Localização  </label>
+                            <input type="text" class="form-control" name="localizacao" value="{{isset($product)? $product->localizacao: old('localizacao')}}">
                         </div>
+
                     </div>
+
 
                     <div class="form-row">
                         <a class="btn btn-primary" href="{{route('products.index')}}">Voltar</a>

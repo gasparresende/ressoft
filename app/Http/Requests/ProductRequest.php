@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProductRequest extends FormRequest
 {
@@ -23,27 +24,26 @@ class ProductRequest extends FormRequest
      */
     public function rules()
     {
-        //$id = $this->segment(2);
+        $id = $this->segment(2);
         return [
-            'produto' => 'required|unique:products|max:255',
-            'codigo' => 'required|unique:products',
+            'product' => [
+                'required',
+                Rule::unique('products')->ignore($id),
+            ],
+            'codigo' => [
+                'required',
+                Rule::unique('products')->ignore($id),
+            ],
+
         ];
     }
 
-    public function messages()
-    {
-        return [
-            'produto.required' => 'A descrição do produto é obrigatório',
-            'codigo.required' => 'O Código do produto é obrigatório',
-            'unique' => 'O campo :attribute já está inserido no banco de dados !'
-        ];
-    }
+
 
     public function attributes()
     {
         return [
-            'produto' => 'Nome',
-            'codigo' => 'NIF',
+            'produto' => 'Produto',
         ];
     }
 }

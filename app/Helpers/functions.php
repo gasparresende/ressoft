@@ -99,6 +99,11 @@ function data_formatada($data, $formato = 'd-m-Y')
     return date($formato, strtotime($data));
 }
 
+function numeros_com_algarismo($numero, $algarismo = 3)
+{
+    return str_pad($numero, $algarismo, '0', STR_PAD_LEFT);
+}
+
 function paraArray($model, $value)
 {
     $data = [];

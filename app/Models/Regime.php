@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Regime extends Model
 {
     use HasFactory;
+
+    public function taxas()
+    {
+        return $this->belongsTo(Taxa::class);
+    }
 }

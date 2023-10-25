@@ -17,7 +17,7 @@ class UsersController extends Controller
             return redirect()->route('home');
         }
         else{
-            echo "erro";
+            return redirect()->back()->with('erro', 'Credenciais inválidas')->withInput();
         }
     }
 

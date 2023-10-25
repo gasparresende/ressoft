@@ -12,20 +12,35 @@ class Product extends Model
     protected $table = "products";
 
     protected $fillable = [
-        'produto',
+        'product',
         'codigo',
-        'units_id',
-        'categories_id',
-        'preco_compra',
-        'preco_venda',
         'status',
         'tipo',
-        'validade',
+        'isstock',
+        'localizacao',
+        'regimes_id',
+        'unidades_id',
     ];
 
     public function units()
     {
         return $this->belongsTo(Unity::class);
+    }
+
+    public function dependencias()
+    {
+        $produto = Product::all()->last();
+        $codigo = 1;
+        if ($produto)
+            $codigo = $produto->codigo + 1;
+
+        $unidades = Unidade::all();
+        $regimes = Regime::with('taxas')->get();
+        return [
+            'unidades' => $unidades,
+            'regimes' => $regimes,
+            'codigo'=>numeros_com_algarismo($codigo),
+        ];
     }
 
     public function categories()
