@@ -1,21 +1,37 @@
 <?php
 
 use App\Http\Controllers\AlunosController;
+use App\Http\Controllers\BalanceteController;
+use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\CaixaCpController;
 use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\CarrinhoMeioPagamentoController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ContaController;
 use App\Http\Controllers\DespesaController;
+use App\Http\Controllers\EmpresaController;
+use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\IndividualController;
 use App\Http\Controllers\InpuProductController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\MesaController;
+use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PermissionsRoleController;
+use App\Http\Controllers\PermissionsUserController;
 use App\Http\Controllers\PrecosController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RolesUserController;
 use App\Http\Controllers\SeleController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\UrlController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UsersShopController;
+use App\Models\Balancete;
 use App\Models\Product;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -59,11 +75,29 @@ Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [UsersController::class, 'home'])->name('home');
 
+    //Listar
+    Route::get('seles/listar', [SeleController::class, 'listar'])->name('seles.listar');
+
+
     //Individual
     Route::get('/lucros', [IndividualController::class, 'lucros'])->name('lucros.index');
 
     //URL
     Route::get('/url/produtos/by-nome', [InventoryController::class, 'listar_by_nome'])->name('url.produtos_by_nome');
+    Route::get('/stocks/actual', [UrlController::class, 'stock_actual'])->name('stock.actual');
+
+
+    Route::post('/lojas/store', [UrlController::class, 'store_loja'])->name('lojas.store');
+    Route::post('/products/store2', [UrlController::class, 'store_produtos'])->name('products.store2');
+    Route::post('/fornecedors/store', [UrlController::class, 'store_fornecedors'])->name('fornecedors.store');
+    Route::get('lojas/listar', [UrlController::class, 'listar'])->name('lojas.listar');
+    Route::get('fornecedors/listar', [UrlController::class, 'listar'])->name('fornecedors.listar');
+
+
+    //Exportar
+    Route::post('/inventories/exportar', [InventoryController::class, 'exportar'])->name('inventories.export');
+
+
 
     //Carrinho de Produtos
     Route::post('/carrinho/adicionar', [CarrinhoController::class, 'adicionar'])->name('carrinho.adicionar');
@@ -75,6 +109,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/carrinho-meio-pagamentos/adicionar', [CarrinhoMeioPagamentoController::class, 'adicionar'])->name('carrinho_meio_pagamentos.adicionar');
     Route::get('/carrinho-meio-pagamentos/{id}/remover', [CarrinhoMeioPagamentoController::class, 'remover'])->name('carrinho_meio_pagamentos.remover');
     Route::get('/carrinho-meio-pagamentos/remover-todos', [CarrinhoMeioPagamentoController::class, 'remover_todos'])->name('carrinho_meio_pagamentos.remover.todos');
+
+    Route::get('inventories/entradas', [InventoryController::class, 'entradas'])->name('inventories.entradas');
+    Route::get('inventories/saidas', [InventoryController::class, 'saidas'])->name('inventories.saidas');
+    Route::get('inventories/transferencias', [InventoryController::class, 'transferencias'])->name('inventories.transferencias');
+
+
 
     Route::resource('/categories', CategoryController::class);
     Route::resource('/inventories', InventoryController::class);
@@ -102,9 +142,31 @@ Route::middleware(['auth'])->group(function () {
     Route::get('products/listar', [ProductsController::class, 'listar'])->name('products.listar');
     Route::resource('/products', ProductsController::class);
 
+//Mesas
+    Route::get('mesas/listar', [MesaController::class, 'listar'])->name('mesas.listar');
+    Route::resource('/mesas', MesaController::class);
+
+    //Relatorios
+    Route::resource('/relatorios', RelatorioController::class);
+
+    Route::resource('/caixas', CaixaController::class);
+    Route::resource('/contas', ContaController::class);
+    Route::resource('/movimentos', ContaController::class);
+    Route::resource('/balancetes', BalanceteController::class);
+
+    Route::resource('/users', UserController::class);
+    Route::resource('/roles', RoleController::class);
+    Route::resource('/permissions', PermissionController::class);
+    Route::resource('/permissions_roles', PermissionsRoleController::class);
+    Route::resource('/permissions_users', PermissionsUserController::class);
+    Route::resource('/roles_users', RolesUserController::class);
+
+    Route::resource('/empresas', EmpresaController::class);
+    Route::resource('/pedidos', PedidoController::class);
+    Route::resource('/facturas', FacturaController::class);
+
 
     //Seles
-    Route::get('seles/listar', [SeleController::class, 'listar'])->name('seles.listar');
     Route::get('/seles/next', [SeleController::class, 'next'])->name('seles.next');
     Route::get('/seles/next2', [SeleController::class, 'next2'])->name('seles.next2');
     Route::resource('/seles', SeleController::class);

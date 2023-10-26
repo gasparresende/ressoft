@@ -24,7 +24,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-2">
                             <label for="">Código* </label>
-                            <input type="text" class="form-control" name="codigo" id="codigo" value="{{$product->codigo}}" >
+                            <input readonly type="text" class="form-control" name="codigo" id="codigo" value="{{$product->codigo}}" >
                             @if($errors->has('codigo'))
                                 <div class="text-danger" style="font-size: 12px">
                                     {{ $errors->first('codigo') }}
@@ -36,7 +36,7 @@
 
                         <div class="form-group col-md-10">
                             <label for="">Produto* </label>
-                            <input type="text" class="form-control" name="product" value="{{$product->product}}">
+                            <input readonly type="text" class="form-control" name="product" value="{{$product->product}}">
                             @if($errors->has('product'))
                                 <div class="text-danger" style="font-size: 12px">
                                     {{ $errors->first('product') }}
@@ -52,7 +52,7 @@
 
                         <div class="form-group col-md-6">
                             <label for="">Regime IVA</label>
-                            <select class="form-control" name="regimes_id">
+                            <select disabled class="form-control" name="regimes_id">
                                 <option value="">-- selecione --</option>
                                 @foreach($regimes as $regime)
                                     <option
@@ -64,7 +64,7 @@
 
                         <div class="form-group col-md-2">
                             <label for="">Unidade </label>
-                            <select class="form-control" name="unidades_id">
+                            <select disabled class="form-control" name="unidades_id">
                                 <option value="">-- selecione --</option>
                                 @foreach($unidades as $unidade)
                                     <option
@@ -76,7 +76,7 @@
 
                         <div class="form-group col-md-2">
                             <label for="">Tipo</label>
-                            <select class="form-control" name="tipo">
+                            <select disabled class="form-control" name="tipo">
                                 <option value="">-- selecione --</option>
                                 <option {{($product->tipo ==='P')? 'selected' : ''}}  value="P">Produto</option>
                                 <option {{($product->tipo == 'S')? 'selected' : ''}}  value="S">Serviço</option>
@@ -87,7 +87,7 @@
 
                         <div class="form-group col-md-2">
                             <label for="">Localização  </label>
-                            <input type="text" class="form-control" name="localizacao" value="{{isset($product)? $product->localizacao: old('localizacao')}}">
+                            <input readonly type="text" class="form-control" name="localizacao" value="{{isset($product)? $product->localizacao: old('localizacao')}}">
                         </div>
 
                     </div>

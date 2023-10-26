@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\CaixaDataTable;
 use App\Http\Requests\ProductRequest;
-use App\Models\Category;
+use App\Models\Categoria;
 use App\Models\Product;
 use App\Models\Regime;
 use App\Models\Unidade;

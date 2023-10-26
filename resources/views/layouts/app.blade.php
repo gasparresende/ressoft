@@ -32,6 +32,23 @@
     <!--    Vizibilidade de botoes-->
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"/>
     @yield('css')
+
+    <style>
+        .card-body input{
+            /*text-transform: uppercase;*/
+            border: 1px solid black;
+        }
+
+        .card-body select{
+            /*text-transform: uppercase;*/
+            border: 1px solid black;
+        }
+
+        .card-body label{
+            color: black;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -78,12 +95,12 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Permissões de Acesso</h6>
-                    <a class="collapse-item" href="buttons.html">Users</a>
-                    <a class="collapse-item" href="buttons.html">Função</a>
-                    <a class="collapse-item" href="buttons.html">Permissão</a>
-                    <a class="collapse-item" href="buttons.html">Permissão | Função</a>
-                    <a class="collapse-item" href="buttons.html">Permissão | Users</a>
-                    <a class="collapse-item" href="buttons.html">Função | Users</a>
+                    <a class="collapse-item" href="{{route('users.index')}}">Users</a>
+                    <a class="collapse-item" href="{{route('roles.index')}}">Função</a>
+                    <a class="collapse-item" href="{{route('permissions.index')}}">Permissão</a>
+                    <a class="collapse-item" href="{{route('permissions_roles.index')}}">Permissão | Função</a>
+                    <a class="collapse-item" href="{{route('permissions_users.index')}}">Permissão | Users</a>
+                    <a class="collapse-item" href="{{route('roles_users.index')}}">Função | Users</a>
                 </div>
             </div>
         </li>
@@ -98,7 +115,7 @@
             <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                  data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="{{route('companies.index')}}">Empresas</a>
+                    <a class="collapse-item" href="{{route('empresas.index')}}">Empresas</a>
                     <a class="collapse-item" href="{{route('shops.index')}}">Lojas</a>
                     <a class="collapse-item" href="{{route('users_shops.index')}}">Usuário - Lojas</a>
                 </div>
@@ -124,10 +141,9 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <!--            <h6 class="collapse-header">Login Screens:</h6>-->
                     <a class="collapse-item" href="{{route('caixas.index')}}">Caixas</a>
-                    <a class="collapse-item" href="{{route('lucros.index')}}">Lucros</a>
-                    <a class="collapse-item" href="{{route('inventories.index')}}">Contas</a>
-                    <a class="collapse-item" href="{{route('inventories.index')}}">Movimentos</a>
-                    <a class="collapse-item" href="{{route('inventories.index')}}">Balancete</a>
+                    <a class="collapse-item" href="{{route('contas.index')}}">Contas</a>
+                    <a class="collapse-item" href="{{route('movimentos.index')}}">Movimentos</a>
+                    <a class="collapse-item" href="{{route('balancetes.index')}}">Balancete</a>
 
                 </div>
             </div>
@@ -143,10 +159,7 @@
             <div id="relatorios" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <!--            <h6 class="collapse-header">Login Screens:</h6>-->
-                    <a class="collapse-item" href="{{route('seles.index')}}">Vendas</a>
-                    <a class="collapse-item" href="{{route('categories.index')}}">Caixas</a>
-                    <a class="collapse-item" href="{{route('inventories.index')}}">Produtos</a>
-                    <a class="collapse-item" href="{{route('inventories.index')}}">Users</a>
+                    <a class="collapse-item" href="{{route('relatorios.index')}}">Relatórios</a>
 
                 </div>
             </div>
@@ -163,21 +176,26 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <!--            <h6 class="collapse-header">Login Screens:</h6>-->
                     <a class="collapse-item" href="{{route('products.index')}}">Cadastro</a>
-                    <a class="collapse-item" href="{{route('categories.index')}}">Categoria</a>
                     <a class="collapse-item" href="{{route('inventories.index')}}">Estoque</a>
-                    <!--            <div class="collapse-divider"></div>
-                                <h6 class="collapse-header">Other Pages:</h6>
-                                <a class="collapse-item" href="404.html">404 Page</a>
-                                <a class="collapse-item" href="blank.html">Blank Page</a>-->
+
                 </div>
             </div>
         </li>
 
-        <!-- Nav Item - Charts -->
         <li class="nav-item">
-            <a class="nav-link" href="{{route('seles.index')}}">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Vendas</span></a>
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#menuVendas"
+               aria-expanded="true" aria-controls="menuVendas">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>Vendas</span>
+            </a>
+            <div id="menuVendas" class="collapse" aria-labelledby="headingPages" data-parent="#menuVendas">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="{{route('mesas.index')}}">Mesas</a>
+                    <a class="collapse-item" href="{{route('pedidos.index')}}">Pedidos</a>
+                    <a class="collapse-item" href="{{route('facturas.index')}}">Facturas</a>
+
+                </div>
+            </div>
         </li>
 
         <!-- Divider -->
@@ -441,6 +459,26 @@
 
 
 <script>
+
+    function getStock_actual(shops_id, products_id, sizes_id, colors_id, marcas_id, categorias_id, validade, resultado) {
+        $.ajax({
+            url: "{{route('stock.actual')}}",
+            data: {
+                'shops_id': shops_id.val(),
+                'products_id': products_id.val(),
+                'sizes_id': sizes_id.val(),
+                'colors_id': colors_id.val(),
+                'marcas_id': marcas_id.val(),
+                'categorias_id': categorias_id.val(),
+                'validade': validade.val(),
+            },
+            success: function (data){
+                console.log(data)
+                $(resultado).val(data)
+            }
+        })
+    }
+
     $(function () {
 
         // $('.tabela_simples').DataTable()

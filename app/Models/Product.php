@@ -45,7 +45,7 @@ class Product extends Model
 
     public function categories()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Categoria::class);
     }
 
     public function setPrecoCompraAttribute($value)

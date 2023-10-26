@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Models\Categoria;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -14,8 +14,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
-        // $categories = Category::all()->sortByDesc('id');
+        $categories = Categoria::all();
+        // $categories = Categoria::all()->sortByDesc('id');
         return view('categories.index', [
             'categories' => $categories
         ]);
@@ -42,7 +42,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        if (Category::create($request->all())) {
+        if (Categoria::create($request->all())) {
             return redirect()->route('categories.index')->with('sucesso', 'Dados Salvo com sucesso!');
         } else {
             return redirect()->back()->with('erro', 'Erro ao salvar');
@@ -52,10 +52,10 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\Category $produtos
+     * @param \App\Models\Categoria $produtos
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(Categoria $category)
     {
         //if (Gate::denies('view'))
         // return redirect()->back()->with('erro', 'Não Tens Permissão para vizualizar este Item');
@@ -68,10 +68,10 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Category $produtos
+     * @param \App\Models\Categoria $produtos
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit(Categoria $category)
     {
         //if (Gate::denies('update'))
         // return redirect()->back()->with('erro', 'Não Tens Permissão para alterar este Item');
@@ -85,10 +85,10 @@ class CategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Category $produtos
+     * @param \App\Models\Categoria $produtos
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Categoria $category)
     {
         if ($category->update($request->all())) {
             return redirect()->route('categories.index')->with('sucesso', 'Dados Alterado com sucesso!');
@@ -100,10 +100,10 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Category $produtos
+     * @param \App\Models\Categoria $produtos
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(Categoria $category)
     {
         //if (Gate::denies('delete'))
         // return redirect()->back()->with('erro', 'Não Tens Permissão para eliminar este Item');

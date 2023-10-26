@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('users_shops', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->unsignedBigInteger('users_id')->index('fk_funcionarios_has_loja_funcionarios1_idx');
-            $table->integer('shops_id')->index('fk_funcionarios_has_loja_loja1_idx');
+            $table->id();
+            $table->foreignId('users_id')->constrained();
+            $table->foreignId('shops_id')->constrained();
             $table->timestamps();
         });
     }

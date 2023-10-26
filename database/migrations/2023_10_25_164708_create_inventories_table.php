@@ -14,10 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('inventories', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('products_id')->index('fk_produtos');
-            $table->integer('shops_id')->index('fk_loja');
-            $table->integer('qtd')->default(0);
+            $table->id();
+            $table->foreignId('products_id')->constrained();
+            $table->foreignId('shops_id')->constrained();
+            $table->foreignId('sizes_id')->nullable()->constrained();
+            $table->foreignId('colors_id')->nullable()->constrained();
+            $table->foreignId('marcas_id')->nullable()->constrained();
+            $table->foreignId('categorias_id')->nullable()->constrained();
+            $table->date('validade')->nullable();
+            $table->integer('qtd');
             $table->timestamps();
         });
     }

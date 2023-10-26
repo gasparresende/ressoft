@@ -11,10 +11,10 @@
         <h1 class="h3 mb-4 text-gray-800">Estoques - Cadastros</h1>
 
         <div class="text-left">
-            <a class="btn btn-success mb-2" href=".entrada" data-toggle="modal">Entrada</a>
-            <a class="btn btn-danger mb-2" href="{{route('inventories.create')}}">Saída</a>
-            <a class="btn btn-warning mb-2" href="{{route('inventories.create')}}">Transferência</a>
-            <a class="btn btn-dark mb-2" href="{{route('inventories.create')}}"><i class="fa fa-file-pdf"></i>
+            <a class="btn btn-success mb-2" href="{{route('inventories.entradas')}}">Entrada</a>
+            <a class="btn btn-danger mb-2" href="{{route('inventories.saidas')}}">Saída</a>
+            <a class="btn btn-warning mb-2" href="{{route('inventories.transferencias')}}">Transferência</a>
+            <a class="btn btn-dark mb-2" data-toggle="modal" data-target="#exportar_stocks" href="#"><i class="fa fa-file-pdf"></i>
                 Inventário</a>
         </div>
         <!-- DataTales Example -->
@@ -30,6 +30,7 @@
                             <th>ID</th>
                             <th>Produto</th>
                             <th>Loja</th>
+                            <th>Validade</th>
                             <th>QTD</th>
                         </tr>
                         </thead>
@@ -39,9 +40,16 @@
 
                             <tr>
                                 <td>{{$inventory->id}}</td>
-                                <td>{{$inventory->products->produto}}</td>
+                                <td>
+                                    {{$inventory->products->product}}
+                                    {{$inventory->colors? ' - '.$inventory->colors->color : ''}}
+                                    {{$inventory->sizes? ' - '.$inventory->sizes->size : ''}}
+                                    {{$inventory->marcas? ' - '.$inventory->marcas->marca : ''}}
+                                    {{$inventory->categorias? ' - '.$inventory->categorias->categoria : ''}}
+                                </td>
                                 <td>{{$inventory->shops->loja}}</td>
-                                <td>{{qtd_stock($inventory->products_id, $inventory->shops_id, $inventory->qtd)}}</td>
+                                <td>{{$inventory->validade}}</td>
+                                <td>{{$inventory->qtd}}</td>
 
                             </tr>
                         @endforeach
@@ -103,7 +111,7 @@
                                         <label for="">Produto*</label>
                                         <select required class="form-control" name="products_id">
                                             <option value="">-- selecione o produto --</option>
-                                            @foreach($products as $product)
+                                            @foreach([] as $product)
                                                 <option
                                                     {{(old('products_id')==$product->id)? 'selected' : ''}} value="{{$product->id}}">{{$product->produto}}</option>
                                             @endforeach
@@ -114,7 +122,7 @@
                                         <label for="">Loja* </label>
                                         <select required class="form-control" name="shops_id">
                                             <option value="">-- selecione a loja --</option>
-                                            @foreach($shops as $shop)
+                                            @foreach([] as $shop)
                                                 <option
                                                     {{(old('shops_id')==$shop->id)? 'selected' : ''}} value="{{$shop->id}}">{{$shop->loja}}</option>
                                             @endforeach
@@ -149,7 +157,74 @@
         </div>
     </div>
 
+
+    <!-- Modal -->
+    <div class="modal" tabindex="-1" role="dialog" id="exportar_stocks">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <h4 class="modal-title text-center text-white">Export Stock</h4>
+
+                </div>
+                <form action="{{route('inventories.export')}}" method="post">
+                    @csrf
+                    <div class="modal-body">
+
+                        <div class="row mb-2">
+
+                            <div class="form-group col-md-12">
+                                <label for="">Stock</label>
+                                <select class="form-control form-control-sm" name="shops_id">
+                                    <option value="%">All</option>
+                                    @foreach($shops as $shop)
+                                        <option value="{{$shop->id}}">{{$shop->loja}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-12">
+
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+
+                            <div class="form-group col-md-6">
+                                <label for="">Initial Date</label>
+                                <input type="date" class="form-control form-control-sm" name="data1" value="{{date('Y-m-d')}}">
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label for="">Final Date</label>
+                                <input type="date" class="form-control form-control-sm" name="data2" value="{{date('Y-m-d')}}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-2" >
+
+                            <div class="form-group col-md-12">
+                                <label for="">Document Type</label>
+                                <select class="form-control form-control-sm" name="tipo">
+                                    <option value="1">PDF</option>
+                                    <option value="0">Excel</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Export <i class="fa fa-file-export"></i></button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- FIM Modal -->
+
 @endsection
+
 
 @section('js')
 

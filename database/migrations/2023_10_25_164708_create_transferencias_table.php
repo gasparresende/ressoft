@@ -14,14 +14,26 @@ return new class extends Migration
     public function up()
     {
         Schema::create('transferencias', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('status_envio_id')->index('status_envio_id');
-            $table->integer('shops_id_origem')->index('loja_origem');
-            $table->integer('shops_id_destino')->index('loja_destino');
-            $table->date('data')->nullable();
-            $table->unsignedBigInteger('users_envio')->nullable()->index('users_envio');
-            $table->unsignedBigInteger('users_recebe')->nullable()->index('users_recebe');
-            $table->unsignedBigInteger('users_rejeita')->nullable()->index('users_rejeita');
+            $table->id();
+            $table->unsignedBigInteger('origem');
+            $table->foreign('origem')->references('id')
+                ->on('shops')->onUpdate('cascade');
+
+            $table->unsignedBigInteger('destino');
+            $table->foreign('destino')->references('id')
+                ->on('shops')->onUpdate('cascade');
+            $table->foreignId('products_id')->nullable()->constrained();
+            $table->foreignId('sizes_id')->nullable()->constrained();
+            $table->foreignId('colors_id')->nullable()->constrained();
+            $table->foreignId('marcas_id')->nullable()->constrained();
+            $table->foreignId('categorias_id')->nullable()->constrained();
+            $table->foreignId('users_id')->nullable()->constrained();
+            $table->date('validade')->nullable();
+            $table->integer('qtd');
+            $table->text('motivo')->nullable();
+            $table->date('data');
+            $table->time('hora');
+            $table->text('obs')->nullable();
             $table->timestamps();
         });
     }

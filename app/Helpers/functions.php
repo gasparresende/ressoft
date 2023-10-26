@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Inventory;
 use App\Models\Razao;
 use App\Models\SubsidiosFuncionarios;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use phputil\extenso\Extenso;
@@ -99,6 +101,22 @@ function data_formatada($data, $formato = 'd-m-Y')
     return date($formato, strtotime($data));
 }
 
+function getCurrentStock($paramentros)
+{
+
+    $stock = Inventory::all()
+        ->where('products_id', $paramentros['products_id'])
+        ->where('shops_id', $paramentros['shops_id'])
+        ->where('sizes_id', $paramentros['sizes_id'])
+        ->where('colors_id', $paramentros['colors_id'])
+        ->where('marcas_id', $paramentros['marcas_id'])
+        ->where('categorias_id', $paramentros['categorias_id'])
+        ->where('validade', $paramentros['validade']);
+
+    return $stock->isEmpty() ? 0 : $stock->first()->qtd;
+
+}
+
 function numeros_com_algarismo($numero, $algarismo = 3)
 {
     return str_pad($numero, $algarismo, '0', STR_PAD_LEFT);
@@ -152,7 +170,7 @@ function loja()
         ->join('shops', 'shops.id', 'users_shops.shops_id')
         ->where('users.id', auth()->id())
         ->get();
-    return $loja->isNotEmpty()? $loja->first()->loja : null;
+    return $loja->isNotEmpty() ? $loja->first()->loja : null;
 }
 
 function caixa()
@@ -162,6 +180,93 @@ function caixa()
         ->get()->last();
     return $caixa;
 }
+
+function stock_inicial($shops_id, $products_id, $sizes_id, $colors_id, $marcas_id, $categorias_id, $validade, $data1, $data2)
+{
+    $stocks = DB::table('entradas')
+        ->where('shops_id', $shops_id)
+        ->where('products_id', $products_id)
+        ->where('sizes_id', $sizes_id)
+        ->where('colors_id', $colors_id)
+        ->where('marcas_id', $marcas_id)
+        ->where('categorias_id', $categorias_id)
+        ->where('validade', $validade)
+        ->where('data', '<', $data1)
+        ->get();
+
+    $entradas = 0;
+    if (!$stocks->isEmpty())
+        $entradas = $stocks->sum('qtd');
+
+    $stocks2 = DB::table('saidas')
+        ->where('shops_id', $shops_id)
+        ->where('products_id', $products_id)
+        ->where('sizes_id', $sizes_id)
+        ->where('colors_id', $colors_id)
+        ->where('marcas_id', $marcas_id)
+        ->where('categorias_id', $categorias_id)
+        ->where('validade', $validade)
+        ->where('data', '<', $data1)
+        ->get();
+
+    $saidas = 0;
+    if (!$stocks2->isEmpty())
+        $saidas = $stocks2->sum('qtd');
+
+    return $entradas - $saidas;
+}
+
+function getStock($shops_id, $products_id, $sizes_id, $colors_id, $marcas_id, $categorias_id, $validade, $data1, $data2)
+{
+    $final = DB::table('entradas')
+        ->where('shops_id', $shops_id)
+        ->where('products_id', $products_id)
+        ->where('sizes_id', $sizes_id)
+        ->where('colors_id', $colors_id)
+        ->where('marcas_id', $marcas_id)
+        ->where('categorias_id', $categorias_id)
+        ->where('validade', $validade)
+        ->whereBetween('data', [$data1, $data2])
+        ->get();
+
+    $entradas = DB::table('entradas')
+        ->where('shops_id', $shops_id)
+        ->where('products_id', $products_id)
+        ->where('sizes_id', $sizes_id)
+        ->where('colors_id', $colors_id)
+        ->where('marcas_id', $marcas_id)
+        ->where('categorias_id', $categorias_id)
+        ->where('validade', $validade)
+        ->whereBetween('data', [$data1, $data2])
+        ->get();
+
+    $qtd_entrada = 0;
+    if (!$entradas->isEmpty())
+        $qtd_entrada = $entradas->sum('qtd');
+
+    $saidas = DB::table('saidas')
+        ->where('shops_id', $shops_id)
+        ->where('products_id', $products_id)
+        ->where('sizes_id', $sizes_id)
+        ->where('colors_id', $colors_id)
+        ->where('marcas_id', $marcas_id)
+        ->where('categorias_id', $categorias_id)
+        ->where('validade', $validade)
+        ->whereBetween('data', [$data1, $data2])
+        ->get();
+
+    $qtd_saida = 0;
+    if (!$saidas->isEmpty())
+        $qtd_saida = $saidas->sum('qtd');
+
+    return [
+        'inicial' => stock_inicial($shops_id, $products_id, $sizes_id, $colors_id, $marcas_id, $categorias_id, $validade, $data1, $data2),
+        'entradas' => $qtd_entrada,
+        'saidas' => $qtd_saida,
+        'final' => 0,
+    ];
+}
+
 
 function caixaAbertoDiaAnterior()
 {
@@ -185,7 +290,7 @@ function isCaixaFechado()
 
 function qtd_stock($products_id, $shops_id, $qtd)
 {
-    $res = \App\Models\InpuProduct::all()
+    $res = \App\Models\Entrada::all()
         ->where('products_id', $products_id)
         ->where('shops_id', $shops_id);
 
