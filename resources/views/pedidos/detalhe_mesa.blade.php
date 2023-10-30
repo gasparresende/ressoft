@@ -67,17 +67,12 @@
                 <form action=# method="post" id="pedidos_form">
                     @csrf
 
-                    <a class="btn btn-info" href="{{route('pedidos.abrir')}}">Voltar</a>
-                    <a class="btn btn-dark" href="#">Imprimir Consulta <i
-                            class="fa fa-download"></i></a>
-                    @if($pedido)
-                        <a class="btn btn-success text-white" href="#">Finalizar Pedido <i
-                                class="fa fa-check-double"></i></a>
-                    @endif
+                    <a class="btn btn-primary" href="{{route('pedidos.abrir')}}">Voltar</a>
+
 
                     <div class="card-body" id="grid_produtos" style="text-align: center">
 
-                        <h2 class="text-info">Detalhe Mesa - {{$mesa->mesa}}</h2>
+                        <h3 style="border: 1px solid #919090" class="text-primary">Detalhe Mesa - {{$mesa->mesa}}</h3>
                         <div class="row w-50" style="margin: auto">
                             <div class="form-group col-md-12 mb-3">
                                 <table class="table table-sm">
@@ -95,6 +90,36 @@
                                     </tr>
                                 </table>
                             </div>
+
+                            @if($pedidos)
+                                <div class="row mb-5">
+                                    <table class="tabel table-sm table-striped tabela">
+                                        <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Qtd</th>
+                                            <th>Preço</th>
+                                            <th>Status</th>
+                                            <th>Total</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        @foreach($pedidos as $pedido)
+                                            <tr>
+                                                <td>{{$pedido->product}}</td>
+                                                <td>{{$pedido->qtd}}</td>
+                                                <td>{{formatar_moeda($pedido->preco)}}</td>
+                                                <td>{{$pedido->statu}}</td>
+                                                <td>{{formatar_moeda($pedido->preco * $pedido->qtd)}}</td>
+                                            </tr>
+                                        @endforeach
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+
                         </div>
 
                         @if(detalhes_mesas($mesa->id))
@@ -152,10 +177,12 @@
                                                     <td>{{$pedido->qtd}}</td>
                                                     <td>{{formatar_moeda($pedido->qtd * $pedido->valor)}}</td>
                                                     <td>
-                                                        <a title="Cancelar Pedido" class="btn btn-sm btn-danger text-white"
+                                                        <a title="Cancelar Pedido"
+                                                           class="btn btn-sm btn-danger text-white"
                                                            href="{{route('pedidos_servicos.delete', ['id'=>$pedido->pedidos_servicos_id])}}"><i
                                                                 class="fa fa-ban"></i></a>
-                                                        <a title="Imprimir Pedido" class="btn btn-sm btn-primary text-white"
+                                                        <a title="Imprimir Pedido"
+                                                           class="btn btn-sm btn-primary text-white"
                                                            href="#"><i class="fa fa-print"></i></a>
                                                     </td>
                                                 </tr>
@@ -180,6 +207,15 @@
 
                         @endif
 
+                        @if($pedido)
+
+                            <a class="btn btn-dark" href="#">Imprimir Consulta <i
+                                    class="fa fa-download"></i></a>
+
+                            <a class="btn btn-success text-white" href="#">Finalizar Pedido <i
+                                    class="fa fa-check-double"></i></a>
+                        @endif
+
                     </div>
                 </form>
             </div>
@@ -201,7 +237,7 @@
                     <h4 class="modal-title text-center text-white">Abrir Mesa</h4>
 
                 </div>
-                <form action="{{route('mesas.abrir.store')}}" method="post" >
+                <form action="{{route('mesas.abrir.store')}}" method="post">
                     @csrf
                     <div class="modal-body">
 
@@ -221,7 +257,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Abrir </button>
+                        <button type="submit" class="btn btn-success">Abrir</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </form>

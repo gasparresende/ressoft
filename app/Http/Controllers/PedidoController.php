@@ -6,7 +6,7 @@ use App\Models\Inventory;
 use App\Models\Mesa;
 use App\Models\Pedido;
 use App\Models\PedidosProduct;
-use App\Models\PedidosStatu;
+use App\Models\PedidosProductsStatu;
 use App\Models\Product;
 use App\Models\Statu;
 use App\Models\StatusMesa;
@@ -86,7 +86,7 @@ class PedidoController extends Controller
             ]);
 
             if ($pedido_product) {
-                $pedido_status = PedidosStatu::create([
+                $pedido_status = PedidosProductsStatu::create([
                     'status_mesas_id' => $request->mesas_id,
                     'status_id' => 5,
                     'users_id' => auth()->id(),
@@ -218,11 +218,16 @@ class PedidoController extends Controller
             ->join('products', 'products.id', 'inventories.products_id')
             ->join('status_mesas', 'status_mesas.id', 'pedidos_products.status_mesas_id')
             ->join('mesas', 'mesas.id', 'status_mesas.mesas_id')
+            ->leftJoin('pedidos_status', 'pedidos_status.status_mesas_id', 'status_mesas.id')
+            ->leftJoin('status', 'status.id', 'pedidos_status.status_id')
             ->where('mesas.id', $mesa->id)
             ->where('status', 1)
             //->where('historico_mesas.status_mesas_id', 2)
             ->get([
                 '*',
+                'pedidos_products.qtd as qtd',
+                'pedidos_products.preco as preco',
+                'status.statu as statu'
             ]);
 
         return view('pedidos.detalhe_mesa', [
@@ -282,7 +287,7 @@ class PedidoController extends Controller
 
             if ($pedido_product) {
                 if ($cart['cozinha'] == 1) {
-                    $pedido_status = PedidosStatu::create([
+                    $pedido_status = PedidosProductsStatu::create([
                         'status_mesas_id' => $cart['status_mesas_id'],
                         'status_id' => 5,
                         'users_id' => auth()->id(),
@@ -355,7 +360,7 @@ class PedidoController extends Controller
 
         $dados = [];
         foreach ($pedidos as $pedido) {
-            $pedidos_status = PedidosStatu::with('users')->with('status')->where('pedidos_id', $pedido->id)
+            $pedidos_status = PedidosProductsStatu::with('users')->with('status')->where('pedidos_id', $pedido->id)
                 ->get()->last();
             $dados[] = [
                 'id' => $pedido->id,

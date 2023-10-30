@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePedidosStatusTable extends Migration
+class CreatePedidosProductsStatusTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreatePedidosStatusTable extends Migration
      */
     public function up()
     {
-        Schema::create('pedidos_status', function (Blueprint $table) {
+        Schema::create('pedidos_products_status', function (Blueprint $table) {
             $table->id();
            // $table->foreignId('pedidos_id')->constrained();
-            $table->foreignId('status_mesas_id')->constrained();
+            $table->foreignId('pedidos_products_id')->constrained();
             $table->foreignId('status_id')->constrained('status');
             $table->foreignId('users_id')->nullable()->constrained();
 
@@ -32,6 +32,6 @@ class CreatePedidosStatusTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pedidos_status');
+        Schema::dropIfExists('pedidos_products_status');
     }
 }
