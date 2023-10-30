@@ -69,11 +69,23 @@
 
                     <a class="btn btn-primary" href="{{route('pedidos.abrir')}}">Voltar</a>
 
+                    @if(detalhes_mesas($mesa->id))
+                        @if($pedidos)
+                            <a class="btn btn-dark" href="#">Imprimir Consulta <i
+                                    class="fa fa-download"></i></a>
+
+                        @else
+                            <a class="btn btn-dark" data-toggle="modal" href="#modal_fechar_mesa">FecharMesa</a>
+
+                        @endif
+
+                    @endif
+
 
                     <div class="card-body" id="grid_produtos" style="text-align: center">
 
                         <h3 style="border: 1px solid #919090" class="text-primary">Detalhe Mesa - {{$mesa->mesa}}</h3>
-                        <div class="row w-50" style="margin: auto">
+                        <div class="row" style="margin: auto">
                             <div class="form-group col-md-12 mb-3">
                                 <table class="table table-sm">
                                     <tr>
@@ -91,7 +103,7 @@
                                 </table>
                             </div>
 
-                            @if($pedidos)
+                            @if($pedidos->isNotEmpty())
                                 <div class="row mb-5">
                                     <table class="tabel table-sm table-striped tabela">
                                         <thead>
@@ -106,7 +118,7 @@
 
                                         <tbody>
                                         @foreach($pedidos as $pedido)
-                                            <tr>
+                                            <tr title="{{$pedido->obs}}">
                                                 <td>{{$pedido->product}}</td>
                                                 <td>{{$pedido->qtd}}</td>
                                                 <td>{{formatar_moeda($pedido->preco)}}</td>
@@ -114,6 +126,12 @@
                                                 <td>{{formatar_moeda($pedido->preco * $pedido->qtd)}}</td>
                                             </tr>
                                         @endforeach
+                                        <tfoot>
+                                        <tr>
+                                            <th colspan="4">Total</th>
+                                            <th>{{$total}}</th>
+                                        </tr>
+                                        </tfoot>
 
                                         </tbody>
                                     </table>
@@ -122,98 +140,37 @@
 
                         </div>
 
-                        @if(detalhes_mesas($mesa->id))
-                            @if(detalhes_mesas($mesa->id)->statu=='Ocupado')
-                                <div class="row mt-4">
-                                    <hr>
-                                    @foreach($produtos as $produto)
-
-                                        <div class="form-group col-md-3 mb-5"
-                                             title="Stock: {{getStock_actual($produto->id, null, 1000, 1000, 5)}}">
-
-                                            <h6>{{$produto->servicos}}</h6>
-
-                                            <a href="#" data-toggle="modal"
-                                               onclick="alterar_pedido({{$produto->id}}, {{$mesa->id}})">
-                                                <img class="img-thumbnail w-50 h-75 click_imagem"
-                                                     src="{{check_file_exist($produto->imagem)? asset("storage/$produto->imagem") : asset('img/sem_imagem.png')}}"
-                                                     alt="">
-                                            </a>
-                                            <a style="display: block; margin: auto"
-                                               onclick="vizualizar_detalhe_produto({{$produto->id}})"
-                                               class="btn btn-sm btn-info mt-2 w-50" href="#" data-toggle="modal">Detalhes</a>
-
-
-                                        </div>
-
-                                    @endforeach
-                                    <hr>
-                                </div>
-                                <h3 class="mt-2 text-success">Itens Selecionado - Pedido
-                                    Nº {{$pedido ? $pedido->id : null}}</h3>
-                                <div class="row w-100" style="margin: auto">
-                                    <div class="form-group col-md-12 mb-3">
-                                        <table class="table table-sm">
-                                            <thead>
-                                            <tr>
-                                                <th>Item</th>
-                                                <th>Preço Un (kz)</th>
-                                                <th>QTD</th>
-                                                <th>Total</th>
-                                                <th>Ações</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @php
-                                                $total = 0;
-                                            @endphp
-                                            @foreach($pedidos as $pedido)
-                                                @php
-                                                    $total +=$pedido->valor * $pedido->qtd;
-                                                @endphp
-                                                <tr title="{{$pedido->descricao}}">
-                                                    <td>{{$pedido->servicos}}</td>
-                                                    <td>{{formatar_moeda($pedido->valor)}}</td>
-                                                    <td>{{$pedido->qtd}}</td>
-                                                    <td>{{formatar_moeda($pedido->qtd * $pedido->valor)}}</td>
-                                                    <td>
-                                                        <a title="Cancelar Pedido"
-                                                           class="btn btn-sm btn-danger text-white"
-                                                           href="{{route('pedidos_servicos.delete', ['id'=>$pedido->pedidos_servicos_id])}}"><i
-                                                                class="fa fa-ban"></i></a>
-                                                        <a title="Imprimir Pedido"
-                                                           class="btn btn-sm btn-primary text-white"
-                                                           href="#"><i class="fa fa-print"></i></a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                            </tbody>
-                                            <tfoot>
-                                            <tr>
-                                                <td colspan="3">TOTAL</td>
-                                                <td>{{formatar_moeda($total)}}</td>
-                                            </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
-
-                            @else
-                                <a class="btn btn-dark" data-toggle="modal" href="#modal_fechar_mesa">Fechar Mesa</a>
-
-                            @endif
-                        @else
-                            <a class="btn btn-success" data-toggle="modal" href="#modal_abrir_mesa">Abrir Mesa</a>
-
-                        @endif
 
                         @if($pedido)
+                            <form action="" method="post">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h4 style="border: 1px solid black; border-radius: 5px" class="py-1 bg-gradient-primary text-white" >Meios de Pagamento</h4>
+                                        <div class="row mb-2">
+                                           <div class="col-md-6">
+                                               <label for="">Cash</label>
+                                               <input autofocus class="form-control dinheiro" type="text" value="">
+                                           </div>
+                                           <div class="col-md-6">
+                                               <label for="">TPA</label>
+                                               <input class="form-control dinheiro" type="text" value="">
+                                           </div>
+                                       </div>
 
-                            <a class="btn btn-dark" href="#">Imprimir Consulta <i
-                                    class="fa fa-download"></i></a>
+                                        <div class="row">
 
-                            <a class="btn btn-success text-white" href="#">Finalizar Pedido <i
-                                    class="fa fa-check-double"></i></a>
+                                            <div class="col-md-6 text-left">
+
+                                                <button class="btn btn-success" type="submit"> Finalizar Pedido / Mesa <i
+                                                        class="fa fa-check-double"></i></button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
                         @endif
 
                     </div>

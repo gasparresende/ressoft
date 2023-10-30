@@ -218,8 +218,8 @@ class PedidoController extends Controller
             ->join('products', 'products.id', 'inventories.products_id')
             ->join('status_mesas', 'status_mesas.id', 'pedidos_products.status_mesas_id')
             ->join('mesas', 'mesas.id', 'status_mesas.mesas_id')
-            ->leftJoin('pedidos_status', 'pedidos_status.status_mesas_id', 'status_mesas.id')
-            ->leftJoin('status', 'status.id', 'pedidos_status.status_id')
+            ->leftJoin('pedidos_products_status', 'pedidos_products_status.pedidos_products_id', 'pedidos_products.id')
+            ->leftJoin('status', 'status.id', 'pedidos_products_status.status_id')
             ->where('mesas.id', $mesa->id)
             ->where('status', 1)
             //->where('historico_mesas.status_mesas_id', 2)
@@ -230,12 +230,17 @@ class PedidoController extends Controller
                 'status.statu as statu'
             ]);
 
+        $total = 0;
+        foreach ($pedidos as $pedido) {
+            $total += $pedido->preco * $pedido->qtd;
+        }
         return view('pedidos.detalhe_mesa', [
             'mesa' => $mesa,
             'produtos' => $produtos,
             'pedidos' => $pedidos,
             'pedido' => $pedidos->last(),
             'users' => User::all(),
+            'total' => formatar_moeda($total)
         ]);
     }
 
@@ -288,7 +293,7 @@ class PedidoController extends Controller
             if ($pedido_product) {
                 if ($cart['cozinha'] == 1) {
                     $pedido_status = PedidosProductsStatu::create([
-                        'status_mesas_id' => $cart['status_mesas_id'],
+                        'pedidos_products_id' => $pedido_product->id,
                         'status_id' => 5,
                         'users_id' => auth()->id(),
                         'data' => now(),
@@ -360,14 +365,14 @@ class PedidoController extends Controller
 
         $dados = [];
         foreach ($pedidos as $pedido) {
-            $pedidos_status = PedidosProductsStatu::with('users')->with('status')->where('pedidos_id', $pedido->id)
+            $pedidos_products_status = PedidosProductsStatu::with('users')->with('status')->where('pedidos_id', $pedido->id)
                 ->get()->last();
             $dados[] = [
                 'id' => $pedido->id,
                 'pedido' => $pedido->pedido,
-                'statu' => $pedidos_status ? $pedidos_status->status->statu : '',
-                'username' => $pedidos_status ? $pedidos_status->users->username : '',
-                'data' => $pedidos_status ? data_formatada($pedidos_status->data) : '',
+                'statu' => $pedidos_products_status ? $pedidos_products_status->status->statu : '',
+                'username' => $pedidos_products_status ? $pedidos_products_status->users->username : '',
+                'data' => $pedidos_products_status ? data_formatada($pedidos_products_status->data) : '',
             ];
         }
 
