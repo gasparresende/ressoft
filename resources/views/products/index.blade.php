@@ -26,6 +26,8 @@
                             <th>ID</th>
                             <th>Código</th>
                             <th>Produto</th>
+                            <th>Preço Venda</th>
+                            <th>Preço Compra</th>
                             <th>Açoes</th>
                         </tr>
                         </thead>
@@ -55,6 +57,8 @@
                     {data: 'id'},
                     {data: 'codigo'},
                     {data: 'product'},
+                    {data: 'preco_venda'},
+                    {data: 'preco_compra'},
                     {
                         "render": function (data, type, row) {
                             return ``+

@@ -14,12 +14,15 @@ class Product extends Model
     protected $fillable = [
         'product',
         'codigo',
+        'preco_venda',
+        'preco_compra',
         'status',
         'tipo',
         'isstock',
         'localizacao',
         'regimes_id',
         'unidades_id',
+        'imagem',
     ];
 
     public function units()
@@ -39,7 +42,7 @@ class Product extends Model
         return [
             'unidades' => $unidades,
             'regimes' => $regimes,
-            'codigo'=>numeros_com_algarismo($codigo),
+            'codigo' => numeros_com_algarismo($codigo),
         ];
     }
 
@@ -50,12 +53,14 @@ class Product extends Model
 
     public function setPrecoCompraAttribute($value)
     {
-        $this->attributes['preco_compra'] = str_replace(',', '.', str_replace('.', '', $value));;
+        if ($value)
+            $this->attributes['preco_compra'] = str_replace(',', '.', str_replace('.', '', $value));;
     }
 
     public function setPrecoVendaAttribute($value)
     {
-        $this->attributes['preco_venda'] = str_replace(',', '.', str_replace('.', '', $value));;
+        if ($value)
+            $this->attributes['preco_venda'] = str_replace(',', '.', str_replace('.', '', $value));;
     }
 
 

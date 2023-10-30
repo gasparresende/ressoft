@@ -34,12 +34,8 @@
     @yield('css')
 
     <style>
-        .card-body input{
-            /*text-transform: uppercase;*/
-            border: 1px solid black;
-        }
 
-        .card-body select{
+        .form-control{
             /*text-transform: uppercase;*/
             border: 1px solid black;
         }
@@ -47,6 +43,13 @@
         .card-body label{
             color: black;
             font-weight: bold;
+        }
+
+        .tabela{
+            border: 1px solid #a5a9ad;
+        }
+        tr td{
+            font-weight: normal;
         }
     </style>
 </head>
@@ -190,9 +193,8 @@
             </a>
             <div id="menuVendas" class="collapse" aria-labelledby="headingPages" data-parent="#menuVendas">
                 <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="{{route('pedidos.abrir')}}">Pedidos</a>
                     <a class="collapse-item" href="{{route('mesas.index')}}">Mesas</a>
-                    <a class="collapse-item" href="{{route('pedidos.index')}}">Pedidos</a>
-                    <a class="collapse-item" href="{{route('facturas.index')}}">Facturas</a>
 
                 </div>
             </div>

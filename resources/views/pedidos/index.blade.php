@@ -8,13 +8,13 @@
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Gestão de Mesas</h1>
+        <h1 class="h3 mb-2 text-gray-800">Gestão de Pedidos</h1>
 
         <div class="text-left mb-2">
-            <a class="btn btn-primary" href="">Novo</a>
-            <a class="btn btn-info" href="">Abrir Mesa </a>
-            <a class="btn btn-dark" href="">Fechar Mesa <i class="fa fa-dollar-sign"></i></a>
-            <a class="btn btn-dark" href="">Histórico <i class="fa fa-history"></i></a>
+            <a class="btn btn-primary" href="{{route('pedidos.create')}}">Novo</a>
+            <a class="btn btn-info" href="{{route('pedidos.abrir')}}">Abrir Pedido </a>
+            <a class="btn btn-dark" href="{{route('pedidos.abrir')}}">Fechar Pedido <i class="fa fa-dollar-sign"></i></a>
+            <a class="btn btn-dark" href="{{route('pedidos.abrir')}}">Histórico <i class="fa fa-history"></i></a>
         </div>
 
         <!-- DataTales Example -->
@@ -24,11 +24,14 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped" id="mesas">
+                    <table class="table table-striped" id="pedidos">
                         <thead>
                         <tr>
                             <th>ID</th>
                             <th>Número</th>
+                            <th>Garçon</th>
+                            <th>Status</th>
+                            <th>Data</th>
                             <th>Açoes</th>
                         </tr>
                         </thead>
@@ -47,16 +50,19 @@
 
     <script>
         $(function () {
-            $('#mesas').dataTable({
+            $('#pedidos').dataTable({
                 "processing": true,
                 "serverSide": true,
                 "order": [0, 'desc'],
                 ajax: {
-                    url: "{{route('mesas.listar')}}",
+                    url: "{{route('pedidos.listar')}}",
                 },
                 columns: [
                     {data: 'id'},
-                    {data: 'mesa'},
+                    {data: 'pedido'},
+                    {data: 'username'},
+                    {data: 'statu'},
+                    {data: 'data'},
                     {
                         "render": function (data, type, row) {
                             return ``+

@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ColorSeeder::class); // Add this line
         $this->call(SizeSeeder::class); // Add this line
         $this->call(MesaSeeder::class); // Add this line
+        $this->call(StatuSeeder::class); // Add this line
 
     }
 }

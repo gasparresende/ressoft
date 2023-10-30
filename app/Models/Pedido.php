@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Pedido extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'clientes_id',
+        'status_mesas_id',
+        'total',
+        'data',
+    ];
 }

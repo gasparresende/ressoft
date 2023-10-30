@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Statu extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'statu'
+    ];
 }

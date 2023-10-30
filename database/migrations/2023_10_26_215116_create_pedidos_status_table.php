@@ -15,7 +15,8 @@ class CreatePedidosStatusTable extends Migration
     {
         Schema::create('pedidos_status', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pedidos_id')->constrained();
+           // $table->foreignId('pedidos_id')->constrained();
+            $table->foreignId('status_mesas_id')->constrained();
             $table->foreignId('status_id')->constrained('status');
             $table->foreignId('users_id')->nullable()->constrained();
 

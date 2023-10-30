@@ -34,7 +34,7 @@
 
                         </div>
 
-                        <div class="form-group col-md-10">
+                        <div class="form-group col-md-6">
                             <label for="">Produto* </label>
                             <input type="text" class="form-control" name="product" value="{{$product->product}}">
                             @if($errors->has('product'))
@@ -43,6 +43,30 @@
                                 </div>
 
                             @endif
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="">Preço Venda </label>
+                            <input type="text" class="form-control dinheiro" name="preco_venda" id="preco_venda" value="{{$product->preco_venda}}" >
+                            @if($errors->has('preco_venda'))
+                                <div class="text-danger" style="font-size: 12px">
+                                    {{ $errors->first('preco_venda') }}
+                                </div>
+
+                            @endif
+
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="">Preço Compra </label>
+                            <input type="text" class="form-control dinheiro" name="preco_compra" id="preco_compra" value="{{$product->preco_compra}}" >
+                            @if($errors->has('preco_compra'))
+                                <div class="text-danger" style="font-size: 12px">
+                                    {{ $errors->first('preco_compra') }}
+                                </div>
+
+                            @endif
+
                         </div>
 
                     </div>

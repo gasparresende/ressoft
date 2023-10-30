@@ -143,6 +143,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/products', ProductsController::class);
 
 //Mesas
+    Route::get('mesas/historico', [MesaController::class, 'historico'])->name('mesas.historico');
+    Route::post('mesas/fechar', [MesaController::class, 'abrir'])->name('mesas.abrir');
+    Route::post('mesas/abrir/store', [MesaController::class, 'abrir_store'])->name('mesas.abrir.store');
+    Route::get('mesas/abrir', [MesaController::class, 'abrir'])->name('mesas.abrir');
     Route::get('mesas/listar', [MesaController::class, 'listar'])->name('mesas.listar');
     Route::resource('/mesas', MesaController::class);
 
@@ -162,7 +166,21 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/roles_users', RolesUserController::class);
 
     Route::resource('/empresas', EmpresaController::class);
+
+    //Route::get('/pedidos/adicionar/{mesa}/{inventory}/cart', [PedidoController::class, 'adicionar_cart'])->name('pedidos.adicionar.cart');
+    Route::post('/pedidos/adicionar/{mesa}/cart', [PedidoController::class, 'adicionar_cart'])->name('pedidos.adicionar.cart');
+    Route::get('/pedidos/cart/remover-all', [PedidoController::class, 'remover_all'])->name('pedidos.cart.remover.all');
+    Route::get('/pedidos/cart/remover', [PedidoController::class, 'remover'])->name('pedidos.cart.remover');
+    Route::get('/pedidos/mesas/{mesa}/consumo', [PedidoController::class, 'mesas_consumo'])->name('pedidos.mesas.consumo');
+    Route::get('/pedidos/mesas/{mesa}/detalhe', [PedidoController::class, 'mesas_detalhes'])->name('pedidos.mesas.detalhe');
+    Route::get('pedidos/historico', [PedidoController::class, 'historico'])->name('pedidos.historico');
+    Route::post('pedidos/fechar', [PedidoController::class, 'abrir'])->name('pedidos.abrir');
+    Route::post('pedidos/abrir/store', [PedidoController::class, 'abrir_store'])->name('pedidos.abrir.store');
+    Route::get('pedidos/abrir', [PedidoController::class, 'abrir'])->name('pedidos.abrir');
+    Route::get('pedidos/listar', [PedidoController::class, 'listar'])->name('pedidos.listar');
     Route::resource('/pedidos', PedidoController::class);
+
+
     Route::resource('/facturas', FacturaController::class);
 
 

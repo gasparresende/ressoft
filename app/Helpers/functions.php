@@ -24,6 +24,50 @@ function capitalizeNomeProprio($nome)
     return trim($nomeCapitalizado);
 }
 
+function status_mesa($mesas_id)
+{
+    $status = DB::table('mesas')
+        ->join('status_mesas', 'status_mesas.mesas_id', 'mesas.id')
+        ->join('status', 'status.id', 'status_mesas.status_id')
+        ->limit(1)
+        ->where('mesas.id', $mesas_id)->get();
+
+    if ($status->isEmpty())
+        return "Disponível";
+
+    return $status->last()->statu;
+}
+
+function garcon($mesas_id)
+{
+    $status = DB::table('mesas')
+        ->join('status_mesas', 'status_mesas.mesas_id', 'mesas.id')
+        ->join('users', 'users.id', 'status_mesas.users_id')
+        ->limit(1)
+        ->where('mesas.id', $mesas_id)->get();
+
+    if ($status->isEmpty())
+        return null;
+
+    return $status->last()->username;
+}
+
+function detalhes_mesas($mesas_id)
+{
+    return DB::table('status_mesas')
+        ->join('mesas', 'mesas.id', 'status_mesas.mesas_id')
+        ->join('status', 'status.id', 'status_mesas.status_id')
+        ->leftJoin('users', 'users.id', 'status_mesas.users_id')
+        ->orderByDesc('status_mesas.id')
+        ->where('mesas.id', $mesas_id)
+        ->limit(1)
+        ->get([
+            '*',
+            'users.username as nome_garcon',
+        ])
+        ->last();
+}
+
 function extenso($valor, $moeda)
 {
     $e = new Extenso();
@@ -153,14 +197,33 @@ function mes($mes_inteiro)
     }
 }
 
-function upload($request, $dir, $table, $nome = 'path')
+function deleteDir($dir)
 {
-    if ($request->hasFile($nome) && $request->file($nome)) {
+    if (Storage::exists($dir)) {
         Storage::deleteDirectory($dir);
-        $file = $request->file($nome)->store($dir);
-        $table->update([$nome => $file]);
-        return true;
     }
+}
+
+function upload($dir, $file)
+{
+    if ($file != null) {
+        deleteDir($dir);
+        $upload = $file->store($dir);
+
+        return $upload;
+    }
+    return null;
+}
+
+function upload_as($dir, $file, $name)
+{
+    if ($file != null) {
+        deleteDir($dir);
+        $upload = $file->storeAs($dir, $name . '.' . $file->extension());
+
+        return $upload;
+    }
+    return null;
 }
 
 function loja()

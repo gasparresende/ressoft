@@ -55,7 +55,12 @@ class ProductsController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        if (Product::create($request->all())) {
+        $product = Product::create($request->all());
+        if ($product) {
+            $up = upload("/products/$product->id", $request->imagem);
+            if ($up) {
+                $product->update(['imagem' => $up]);
+            }
             return redirect()->route('products.index')->with('sucesso', 'Dados Salvo com sucesso!');
         } else {
             return redirect()->back()->with('erro', 'Erro ao salvar')->withInput();
@@ -73,7 +78,7 @@ class ProductsController extends Controller
         //if (Gate::denies('view'))
         // return redirect()->back()->with('erro', 'Não Tens Permissão para vizualizar este Item');
         $dependencias = $this->produto->dependencias();
-        $dependencias['product']=$product;
+        $dependencias['product'] = $product;
         return view('products.show', $dependencias);
 
     }
@@ -90,7 +95,7 @@ class ProductsController extends Controller
         // return redirect()->back()->with('erro', 'Não Tens Permissão para alterar este Item');
 
         $dependencias = $this->produto->dependencias();
-        $dependencias['product']=$product;
+        $dependencias['product'] = $product;
         return view('products.edit', $dependencias);
     }
 
@@ -130,9 +135,26 @@ class ProductsController extends Controller
 
     public function listar()
     {
-        $products = DB::table('products')->select(['*']);
+        $products = Product::all();
 
-        return DataTables::of($products)
+        $dados = [];
+        foreach ($products as $product) {
+            $dados[] = [
+                'id' => $product->id,
+                'product' => $product->product,
+                'codigo' => $product->codigo,
+                'preco_venda' => formatar_moeda($product->preco_venda),
+                'preco_compra' => formatar_moeda($product->preco_compra),
+                'status' => $product->status,
+                'tipo' => $product->tipo,
+                'isstock' => $product->isstock,
+                'localizacao' => $product->localizacao,
+                'regimes_id' => $product->regimes_id,
+                'unidades_id' => $product->unidades_id,
+            ];
+        }
+
+        return DataTables::of($dados)
             ->make(true);
     }
 

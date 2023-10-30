@@ -215,7 +215,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Export <i class="fa fa-file-export"></i></button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </form>
             </div>

@@ -11,10 +11,10 @@
         <h1 class="h3 mb-2 text-gray-800">Gestão de Mesas</h1>
 
         <div class="text-left mb-2">
-            <a class="btn btn-primary" href="">Novo</a>
-            <a class="btn btn-info" href="">Abrir Mesa </a>
-            <a class="btn btn-dark" href="">Fechar Mesa <i class="fa fa-dollar-sign"></i></a>
-            <a class="btn btn-dark" href="">Histórico <i class="fa fa-history"></i></a>
+            <a class="btn btn-primary" href="{{route('mesas.create')}}">Novo</a>
+            <a class="btn btn-info" href="{{route('mesas.abrir')}}">Abrir Mesa </a>
+            <a class="btn btn-dark" href="{{route('mesas.abrir')}}">Fechar Mesa <i class="fa fa-dollar-sign"></i></a>
+            <a class="btn btn-dark" href="{{route('mesas.abrir')}}">Histórico <i class="fa fa-history"></i></a>
         </div>
 
         <!-- DataTales Example -->
@@ -29,6 +29,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Número</th>
+                            <th>Garçon</th>
+                            <th>Status</th>
+                            <th>Data</th>
                             <th>Açoes</th>
                         </tr>
                         </thead>
@@ -57,6 +60,9 @@
                 columns: [
                     {data: 'id'},
                     {data: 'mesa'},
+                    {data: 'username'},
+                    {data: 'statu'},
+                    {data: 'data'},
                     {
                         "render": function (data, type, row) {
                             return ``+
