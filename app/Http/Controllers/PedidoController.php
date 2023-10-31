@@ -101,7 +101,6 @@ class PedidoController extends Controller
 
     }
 
-
     public function adicionar_cart(Mesa $mesa, Request $request)
     {
         $this->middleware('VerifyCsrfToken');
@@ -240,7 +239,8 @@ class PedidoController extends Controller
             'pedidos' => $pedidos,
             'pedido' => $pedidos->last(),
             'users' => User::all(),
-            'total' => formatar_moeda($total)
+            'total' => formatar_moeda($total),
+            'total2' => $total
         ]);
     }
 
@@ -254,22 +254,11 @@ class PedidoController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store()
     {
 
@@ -314,46 +303,30 @@ class PedidoController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Pedido $pedido
-     * @return \Illuminate\Http\Response
-     */
+    public function finalizar(Request $request)
+    {
+        $request->validate([
+            'troco'=>'required',
+            'dinheiro'=>'required',
+            'tpa'=>'required_if:dinheiro,null',
+        ]);
+    }
+
     public function show(Pedido $pedido)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\Models\Pedido $pedido
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Pedido $pedido)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Pedido $pedido
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Pedido $pedido)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\Pedido $pedido
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Pedido $pedido)
     {
         //
@@ -379,4 +352,5 @@ class PedidoController extends Controller
         return DataTables::of($dados)
             ->make(true);
     }
+
 }

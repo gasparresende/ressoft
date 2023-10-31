@@ -64,8 +64,6 @@
             </div>
 
             <div class="card-body" style="margin: 25px 25px">
-                <form action=# method="post" id="pedidos_form">
-                    @csrf
 
                     <a class="btn btn-primary" href="{{route('pedidos.abrir')}}">Voltar</a>
 
@@ -142,26 +140,56 @@
 
 
                         @if($pedido)
-                            <form action="" method="post">
+                            <form action="{{route('pedidos.finalizar')}}" method="post">
+                                @csrf
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <h4 style="border: 1px solid black; border-radius: 5px" class="py-1 bg-gradient-primary text-white" >Meios de Pagamento</h4>
+                                    <div class="col-md-6">
+                                        <h4 style="border: 1px solid black; border-radius: 5px"
+                                            class="py-1 bg-gradient-primary text-white">Meios de Pagamento</h4>
                                         <div class="row mb-2">
-                                           <div class="col-md-6">
-                                               <label for="">Cash</label>
-                                               <input autofocus class="form-control dinheiro" type="text" value="">
-                                           </div>
-                                           <div class="col-md-6">
-                                               <label for="">TPA</label>
-                                               <input class="form-control dinheiro" type="text" value="">
-                                           </div>
-                                       </div>
+                                            <div class="col-md-4">
+                                                <label for="">Cash</label>
+                                                <input autofocus class="form-control dinheiro" type="text" id="dinheiro"
+                                                       value="" name="dinheiro">
+                                                @if($errors->has('dinheiro'))
+                                                    <div class="text-danger" style="font-size: 12px">
+                                                        {{ $errors->first('dinheiro') }}
+                                                    </div>
+
+                                                @endif
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="">TPA</label>
+                                                <input class="form-control dinheiro" type="text" id="tpa" value=""
+                                                       name="tpa">
+                                                @if($errors->has('tpa'))
+                                                    <div class="text-danger" style="font-size: 12px">
+                                                        {{ $errors->first('tpa') }}
+                                                    </div>
+
+                                                @endif
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label for="">Troco</label>
+                                                <input readonly class="form-control" id="troco" type="number"
+                                                       name="troco">
+
+                                                @if($errors->has('troco'))
+                                                    <div class="text-danger" style="font-size: 12px">
+                                                        {{ $errors->first('troco') }}
+                                                    </div>
+
+                                                @endif
+                                            </div>
+                                        </div>
 
                                         <div class="row">
 
                                             <div class="col-md-6 text-left">
 
-                                                <button class="btn btn-success" type="submit"> Finalizar Pedido / Mesa <i
+                                                <button class="btn btn-success" type="submit"> Finalizar Pedido / Mesa
+                                                    <i
                                                         class="fa fa-check-double"></i></button>
                                             </div>
 
@@ -170,11 +198,9 @@
                                 </div>
                             </form>
 
-
                         @endif
 
                     </div>
-                </form>
             </div>
 
             <div class="card-footer py-3">
@@ -234,8 +260,26 @@
             $('#abrir_mesa').modal('show')
         }
 
-        $(function () {
+        function getTroco() {
+            var dinheiro = parseFloat($('#dinheiro').val().replace('.', '').replace(',', '.')) || 0
+            var tpa = parseFloat($('#tpa').val().replace('.', '').replace(',', '.')) || 0
 
+            var troco = $('#troco')
+
+            var sub = tpa+dinheiro
+            var total = {{$total2}}
+
+            $('#troco').val(sub-total)
+        }
+
+        $(function () {
+            $('#dinheiro').keyup(function () {
+                getTroco()
+            })
+
+            $('#tpa').keyup(function () {
+                getTroco()
+            })
         })
     </script>
 
