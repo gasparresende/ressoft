@@ -24,8 +24,6 @@ class PedidoController extends Controller
 
     public function abrir()
     {
-
-
         $produtos = Inventory::with('products')->with('sizes')
             ->with('colors')->with('categorias')->with('marcas')
             ->where('qtd', '>', 0)
@@ -94,13 +92,9 @@ class PedidoController extends Controller
                 ]);
                 return redirect()->back()->with("sucesso", "Pedido Adicionado com sucesso!");
             }
-
             return redirect()->back()->with("erro", "Erro ao Adicionar pedido")->withInput();
         }
-
-
     }
-
 
     public function adicionar_cart(Mesa $mesa, Request $request)
     {
@@ -258,13 +252,11 @@ class PedidoController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store()
     {
-
         $carts = session('carrinho_pedidos');
-        $count = 0;
         foreach ($carts as $key => $cart) {
 
             $inventory = Inventory::all()->find($key);
@@ -297,11 +289,7 @@ class PedidoController extends Controller
                 session()->put('carrinho_pedidos', $carts);
             }
         }
-
-
         return redirect()->back()->with("sucesso", "Pedido Registado com sucesso!");
-
-
     }
 
     /**
