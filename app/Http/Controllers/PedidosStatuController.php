@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PedidosStatu;
+use App\Models\PedidosProductsStatu;
 use Illuminate\Http\Request;
 
 class PedidosStatuController extends Controller
@@ -41,10 +41,10 @@ class PedidosStatuController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PedidosStatu  $pedidosStatu
+     * @param  \App\Models\PedidosProductsStatu  $pedidosStatu
      * @return \Illuminate\Http\Response
      */
-    public function show(PedidosStatu $pedidosStatu)
+    public function show(PedidosProductsStatu $pedidosStatu)
     {
         //
     }
@@ -52,10 +52,10 @@ class PedidosStatuController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PedidosStatu  $pedidosStatu
+     * @param  \App\Models\PedidosProductsStatu  $pedidosStatu
      * @return \Illuminate\Http\Response
      */
-    public function edit(PedidosStatu $pedidosStatu)
+    public function edit(PedidosProductsStatu $pedidosStatu)
     {
         //
     }
@@ -64,10 +64,10 @@ class PedidosStatuController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PedidosStatu  $pedidosStatu
+     * @param  \App\Models\PedidosProductsStatu  $pedidosStatu
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PedidosStatu $pedidosStatu)
+    public function update(Request $request, PedidosProductsStatu $pedidosStatu)
     {
         //
     }
@@ -75,10 +75,10 @@ class PedidosStatuController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PedidosStatu  $pedidosStatu
+     * @param  \App\Models\PedidosProductsStatu  $pedidosStatu
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PedidosStatu $pedidosStatu)
+    public function destroy(PedidosProductsStatu $pedidosStatu)
     {
         //
     }
