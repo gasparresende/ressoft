@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('caixas', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->tinyInteger('status');
             $table->date('data_caixa');
-            $table->unsignedBigInteger('users_id')->index('fk_caixa_usuarios1_idx');
+            $table->foreignId('users_id')->constrained();
             $table->decimal('saldo_inicial', 10)->nullable()->default(0);
             $table->decimal('total', 10)->nullable()->default(0);
             $table->timestamps();

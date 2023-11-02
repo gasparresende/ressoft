@@ -178,7 +178,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('pedidos/abrir/store', [PedidoController::class, 'abrir_store'])->name('pedidos.abrir.store');
     Route::get('pedidos/abrir', [PedidoController::class, 'abrir'])->name('pedidos.abrir');
     Route::get('pedidos/listar', [PedidoController::class, 'listar'])->name('pedidos.listar');
-    Route::post('/pedidos/finalizar', [PedidoController::class, 'finalizar'])->name('pedidos.finalizar');
+    Route::post('/pedidos/finalizar/{mesa}/{total}', [PedidoController::class, 'finalizar'])->name('pedidos.finalizar');
     Route::resource('/pedidos', PedidoController::class);
 
 

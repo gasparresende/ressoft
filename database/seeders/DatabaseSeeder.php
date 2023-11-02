@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
         $this->call(SizeSeeder::class); // Add this line
         $this->call(MesaSeeder::class); // Add this line
         $this->call(StatuSeeder::class); // Add this line
+        $this->call(MeioPagamentoSeeder::class); // Add this line
+        $this->call(TipoSeeder::class); // Add this line
 
     }
 }

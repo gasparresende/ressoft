@@ -65,142 +65,143 @@
 
             <div class="card-body" style="margin: 25px 25px">
 
-                    <a class="btn btn-primary" href="{{route('pedidos.abrir')}}">Voltar</a>
+                <a class="btn btn-primary" href="{{route('pedidos.abrir')}}">Voltar</a>
 
-                    @if(detalhes_mesas($mesa->id))
-                        @if($pedidos)
-                            <a class="btn btn-dark" href="#">Imprimir Consulta <i
-                                    class="fa fa-download"></i></a>
+                @if(detalhes_mesas($mesa->id))
+                    @if($pedidos)
+                        <a class="btn btn-dark" href="#">Imprimir Consulta <i
+                                class="fa fa-download"></i></a>
 
-                        @else
-                            <a class="btn btn-dark" data-toggle="modal" href="#modal_fechar_mesa">FecharMesa</a>
-
-                        @endif
+                    @else
+                        <a class="btn btn-dark" data-toggle="modal" href="#modal_fechar_mesa">FecharMesa</a>
 
                     @endif
 
+                @endif
 
-                    <div class="card-body" id="grid_produtos" style="text-align: center">
 
-                        <h3 style="border: 1px solid #919090" class="text-primary">Detalhe Mesa - {{$mesa->mesa}}</h3>
-                        <div class="row" style="margin: auto">
-                            <div class="form-group col-md-12 mb-3">
-                                <table class="table table-sm">
-                                    <tr>
-                                        <th>Status</th>
-                                        <th>Garçon</th>
-                                        <th>Cliente</th>
-                                        <th>Data</th>
-                                    </tr>
-                                    <tr>
-                                        <td>{{detalhes_mesas($mesa->id) ? detalhes_mesas($mesa->id)->statu : 'Disponível'}}</td>
-                                        <td>{{detalhes_mesas($mesa->id) ? detalhes_mesas($mesa->id)->nome_garcon : ''}}</td>
-                                        <td>{{detalhes_mesas($mesa->id) ? 'CONSUMIDOR FINAL' : ''}}</td>
-                                        <td>{{detalhes_mesas($mesa->id) ? data_formatada(detalhes_mesas($mesa->id)->data, 'd-m-Y h:i:s'): ''}}</td>
-                                    </tr>
-                                </table>
-                            </div>
+                <div class="card-body" id="grid_produtos" style="text-align: center">
 
-                            @if($pedidos->isNotEmpty())
-                                <div class="row mb-5">
-                                    <table class="tabel table-sm table-striped tabela">
-                                        <thead>
-                                        <tr>
-                                            <th>Produto</th>
-                                            <th>Qtd</th>
-                                            <th>Preço</th>
-                                            <th>Status</th>
-                                            <th>Total</th>
-                                        </tr>
-                                        </thead>
-
-                                        <tbody>
-                                        @foreach($pedidos as $pedido)
-                                            <tr title="{{$pedido->obs}}">
-                                                <td>{{$pedido->product}}</td>
-                                                <td>{{$pedido->qtd}}</td>
-                                                <td>{{formatar_moeda($pedido->preco)}}</td>
-                                                <td>{{$pedido->statu}}</td>
-                                                <td>{{formatar_moeda($pedido->preco * $pedido->qtd)}}</td>
-                                            </tr>
-                                        @endforeach
-                                        <tfoot>
-                                        <tr>
-                                            <th colspan="4">Total</th>
-                                            <th>{{$total}}</th>
-                                        </tr>
-                                        </tfoot>
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endif
-
+                    <h3 style="border: 1px solid #919090" class="text-primary">Detalhe Mesa - {{$mesa->mesa}}</h3>
+                    <div class="row" style="margin: auto">
+                        <div class="form-group col-md-12 mb-3">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Garçon</th>
+                                    <th>Cliente</th>
+                                    <th>Data</th>
+                                </tr>
+                                <tr>
+                                    <td>{{detalhes_mesas($mesa->id) ? detalhes_mesas($mesa->id)->statu : 'Disponível'}}</td>
+                                    <td>{{detalhes_mesas($mesa->id) ? detalhes_mesas($mesa->id)->nome_garcon : ''}}</td>
+                                    <td>{{detalhes_mesas($mesa->id) ? 'CONSUMIDOR FINAL' : ''}}</td>
+                                    <td>{{detalhes_mesas($mesa->id) ? data_formatada(detalhes_mesas($mesa->id)->data, 'd-m-Y h:i:s'): ''}}</td>
+                                </tr>
+                            </table>
                         </div>
 
+                        @if($pedidos->isNotEmpty())
+                            <div class="row mb-5">
+                                <table class="tabel table-sm table-striped tabela">
+                                    <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Qtd</th>
+                                        <th>Preço</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                    </tr>
+                                    </thead>
 
-                        @if($pedido)
-                            <form action="{{route('pedidos.finalizar')}}" method="post">
-                                @csrf
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h4 style="border: 1px solid black; border-radius: 5px"
-                                            class="py-1 bg-gradient-primary text-white">Meios de Pagamento</h4>
-                                        <div class="row mb-2">
-                                            <div class="col-md-4">
-                                                <label for="">Cash</label>
-                                                <input autofocus class="form-control dinheiro" type="text" id="dinheiro"
-                                                       value="" name="dinheiro">
-                                                @if($errors->has('dinheiro'))
-                                                    <div class="text-danger" style="font-size: 12px">
-                                                        {{ $errors->first('dinheiro') }}
-                                                    </div>
+                                    <tbody>
+                                    @foreach($pedidos as $pedido)
+                                        <tr title="{{$pedido->obs}}">
+                                            <td>{{$pedido->product}}</td>
+                                            <td>{{$pedido->qtd}}</td>
+                                            <td>{{formatar_moeda($pedido->preco)}}</td>
+                                            <td>{{$pedido->statu}}</td>
+                                            <td>{{formatar_moeda($pedido->preco * $pedido->qtd)}}</td>
+                                        </tr>
+                                    @endforeach
+                                    <tfoot>
+                                    <tr>
+                                        <th colspan="4">Total</th>
+                                        <th>{{$total}}</th>
+                                    </tr>
+                                    </tfoot>
 
-                                                @endif
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="">TPA</label>
-                                                <input class="form-control dinheiro" type="text" id="tpa" value=""
-                                                       name="tpa">
-                                                @if($errors->has('tpa'))
-                                                    <div class="text-danger" style="font-size: 12px">
-                                                        {{ $errors->first('tpa') }}
-                                                    </div>
-
-                                                @endif
-                                            </div>
-
-                                            <div class="col-md-4">
-                                                <label for="">Troco</label>
-                                                <input readonly class="form-control" id="troco" type="number"
-                                                       name="troco">
-
-                                                @if($errors->has('troco'))
-                                                    <div class="text-danger" style="font-size: 12px">
-                                                        {{ $errors->first('troco') }}
-                                                    </div>
-
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-
-                                            <div class="col-md-6 text-left">
-
-                                                <button class="btn btn-success" type="submit"> Finalizar Pedido / Mesa
-                                                    <i
-                                                        class="fa fa-check-double"></i></button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-
+                                    </tbody>
+                                </table>
+                            </div>
                         @endif
 
                     </div>
+
+
+                    @if($pedido)
+                        <form action="{{route('pedidos.finalizar', ['mesa'=>$mesa->id, 'total'=>$total2])}}"
+                              method="post">
+                            @csrf
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 style="border: 1px solid black; border-radius: 5px"
+                                        class="py-1 bg-gradient-primary text-white">Meios de Pagamento</h4>
+                                    <div class="row mb-2">
+                                        <div class="col-md-4">
+                                            <label for="">Cash</label>
+                                            <input autofocus class="form-control dinheiro" type="text" id="dinheiro"
+                                                   value="{{old('dinheiro')}}" name="dinheiro">
+                                            @if($errors->has('dinheiro'))
+                                                <div class="text-danger" style="font-size: 12px">
+                                                    {{ $errors->first('dinheiro') }}
+                                                </div>
+
+                                            @endif
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="">TPA</label>
+                                            <input class="form-control dinheiro" type="text" id="tpa" value="{{old('tpa')}}"
+                                                   name="tpa">
+                                            @if($errors->has('tpa'))
+                                                <div class="text-danger" style="font-size: 12px">
+                                                    {{ $errors->first('tpa') }}
+                                                </div>
+
+                                            @endif
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="">Troco</label>
+                                            <input value="{{old('troco')}}" readonly class="form-control" id="troco" type="number"
+                                                   name="troco">
+
+                                            @if($errors->has('troco'))
+                                                <div class="text-danger" style="font-size: 12px">
+                                                    {{ $errors->first('troco') }}
+                                                </div>
+
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 text-left">
+
+                                            <button class="btn btn-success" type="submit"> Finalizar Pedido / Mesa
+                                                <i
+                                                    class="fa fa-check-double"></i></button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    @endif
+
+                </div>
             </div>
 
             <div class="card-footer py-3">
@@ -266,7 +267,7 @@
 
             var troco = $('#troco')
 
-            var sub = tpa+dinheiro
+            var sub = tpa + dinheiro
             var total = {{$total2}}
 
             $('#troco').val(sub-total)

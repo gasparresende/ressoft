@@ -101,7 +101,14 @@
                                 <div class="col">
                                     <div class="card shadow-sm">
                                         <div style="font-size: 10pt"
-                                             class="card-header">{{$produto->products->product}}</div>
+                                             class="card-header">
+                                            {{$produto->products->product}}
+                                            {{$produto->sizes ? ' - '.$produto->sizes->size : ''}}
+                                            {{$produto->colors ? ' - '.$produto->colors->color : ''}}
+                                            {{$produto->marcas ? ' - '.$produto->marcas->marca : ''}}
+                                            {{$produto->categorias ? ' - '.$produto->categorias->categoria : ''}}
+
+                                        </div>
 
                                         <button type="submit">
                                             <img src="/storage/{{$produto->products->imagem}}"
@@ -218,6 +225,7 @@
                         <div class="text-right mt-3">
                             <form action="{{route('pedidos.store')}}" method="post">
                                 @csrf
+                                <input type="hidden" name="mesas_id" value="{{$mesa->id}}">
                                 <button class="btn btn-success mb-3" type="submit"> Registar
                                     Pedido
                                 </button>

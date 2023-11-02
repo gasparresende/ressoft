@@ -15,15 +15,21 @@ class CreateFacturasTable extends Migration
     {
         Schema::create('facturas', function (Blueprint $table) {
             $table->id();
-            $table->integer('numero');
-            $table->decimal('total', 10, 2);
-            $table->dateTime('data_emissao');
-            $table->date('data_vencimento');
-            $table->foreignId('clientes_id')->constrained();
-            $table->string('mes');
-            $table->integer('ano');
-            $table->foreignId('moedas_id')->constrained();
-            $table->boolean('status')->default(1);
+            $table->integer('numero')->nullable()->default(1);
+            $table->decimal('valor_total', 10, 2)->nullable();
+            $table->dateTime('data_emissao')->nullable();
+            $table->date('data_vencimento')->nullable();
+            $table->foreignId('clientes_id')->constrained()->onUpdate('cascade');
+            $table->string('mes', 45)->nullable();
+            $table->integer('ano')->nullable();
+            $table->foreignId('users_id')->nullable()->constrained()->onUpdate('cascade');
+            $table->foreignId('moedas_id')->nullable()->constrained()->onUpdate('cascade');
+            $table->integer('status')->nullable()->default(1);
+            $table->string('hash', 256)->nullable();
+            $table->decimal('retencao', 10, 2)->nullable();
+            $table->string('motivo_nc', 100)->nullable();
+            $table->boolean('tipo')->nullable()->default(false);
+            $table->foreignId('tipos_id')->nullable()->constrained()->onUpdate('cascade');
             $table->timestamps();
         });
     }

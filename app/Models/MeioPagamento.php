@@ -5,15 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Caixa extends Model
+class MeioPagamento extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
-        'status',
-        'data_caixa',
-        'users_id',
-        'saldo_inicial',
-        'total',
+        'meio',
     ];
 }

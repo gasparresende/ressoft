@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateFacturaMeioPagamentosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('caixa_meio_pagamentos', function (Blueprint $table) {
+        Schema::create('factura_meio_pagamentos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('caixas_id')->constrainted();
+            $table->foreignId('facturas_id')->constrainted();
             $table->foreignId('meios_pagamentos_id')->constrainted();
             $table->decimal('valor', 10)->nullable()->default(0);
             $table->decimal('troco', 10, 0)->nullable()->default(0);
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('caixa_meio_pagamentos');
+        Schema::dropIfExists('factura_meio_pagamentos');
     }
-};
+}

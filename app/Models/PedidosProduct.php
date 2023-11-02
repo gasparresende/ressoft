@@ -10,7 +10,7 @@ class PedidosProduct extends Model
     use HasFactory;
 
     protected $fillable = [
-        'status_mesas_id',
+        'pedidos_id',
         'inventories_id',
         'qtd',
         'preco',

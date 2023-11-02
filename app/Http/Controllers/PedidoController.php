@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Caixa;
+use App\Models\Factura;
+use App\Models\FacturaMeioPagamento;
+use App\Models\FacturasProduct;
 use App\Models\Inventory;
 use App\Models\Mesa;
 use App\Models\Pedido;
@@ -71,12 +75,12 @@ class PedidoController extends Controller
             $inventory = Inventory::all()->find($request->produtos_id);
             $product = Product::all()->find($inventory->products_id);
 
-            /*$pedido = Pedido::create([
+            $pedido = Pedido::create([
                 'clientes_id' => null,
                 'status_mesas_id' => $request->mesas_id,
                 'total' => 0,
                 'data' => now()
-            ]);*/
+            ]);
 
             $pedido_product = PedidosProduct::create([
                 'status_mesas_id' => $request->mesas_id,
@@ -86,12 +90,12 @@ class PedidoController extends Controller
             ]);
 
             if ($pedido_product) {
-                $pedido_status = PedidosProductsStatu::create([
-                    'status_mesas_id' => $request->mesas_id,
+                /*$pedido_status = PedidosProductsStatu::create([
+                    'pedidos_id' => $pedido->id,
+                    'inventories_id' => $request->mesas_id,
                     'status_id' => 5,
-                    'users_id' => auth()->id(),
                     'data' => now(),
-                ]);
+                ]);*/
                 return redirect()->back()->with("sucesso", "Pedido Adicionado com sucesso!");
             }
 
@@ -212,10 +216,11 @@ class PedidoController extends Controller
         $produtos = DB::table('inventories')
             ->get();
 
-        $pedidos = DB::table('pedidos_products')
+        $pedidos = DB::table('pedidos')
+            ->join('pedidos_products', 'pedidos_products.pedidos_id', 'pedidos.id')
             ->join('inventories', 'inventories.id', 'pedidos_products.inventories_id')
             ->join('products', 'products.id', 'inventories.products_id')
-            ->join('status_mesas', 'status_mesas.id', 'pedidos_products.status_mesas_id')
+            ->join('status_mesas', 'status_mesas.id', 'pedidos.status_mesas_id')
             ->join('mesas', 'mesas.id', 'status_mesas.mesas_id')
             ->leftJoin('pedidos_products_status', 'pedidos_products_status.pedidos_products_id', 'pedidos_products.id')
             ->leftJoin('status', 'status.id', 'pedidos_products_status.status_id')
@@ -259,57 +264,167 @@ class PedidoController extends Controller
         //
     }
 
-    public function store()
+    public function store(Request $request)
     {
 
         $carts = session('carrinho_pedidos');
-        $count = 0;
-        foreach ($carts as $key => $cart) {
+        $status_mesa = StatusMesa::all()
+            ->where('mesas_id', $request->mesas_id)
+            ->where('status_id', 1)
+            ->last();
 
-            $inventory = Inventory::all()->find($key);
-            $product = Product::all()->find($inventory->products_id);
+        $pedido = Pedido::create([
+            'clientes_id' => null,
+            'status_mesas_id' =>$status_mesa->id,
+            'total' => 0,
+            'data' => now()
+        ]);
+       if ($pedido){
+           foreach ($carts as $key => $cart) {
 
-            $pedido_product = PedidosProduct::create([
-                'status_mesas_id' => $cart['status_mesas_id'],
-                'inventories_id' => $inventory->id,
-                'qtd' => $cart['qtd'],
-                //'preco' => $product->preco_venda,
-                'preco' => $cart['preco'],
-                'cozinha' => $cart['cozinha'],
-                'obs' => $cart['obs']
-            ]);
-
-            if ($pedido_product) {
-                if ($cart['cozinha'] == 1) {
-                    $pedido_status = PedidosProductsStatu::create([
-                        'pedidos_products_id' => $pedido_product->id,
-                        'status_id' => 5,
-                        'users_id' => auth()->id(),
-                        'data' => now(),
-                    ]);
-                }
-            }
-
-            //Remover do carrinho
-            if (isset($carts[$key])) {
-                unset($carts[$key]);
-                session()->put('carrinho_pedidos', $carts);
-            }
-        }
+               $inventory = Inventory::all()->find($key);
 
 
-        return redirect()->back()->with("sucesso", "Pedido Registado com sucesso!");
+               $pedido_product = PedidosProduct::create([
+                   'pedidos_id' => $pedido->id,
+                   'inventories_id' => $inventory->id,
+                   'qtd' => $cart['qtd'],
+                   //'preco' => $product->preco_venda,
+                   'preco' => $cart['preco'],
+                   'cozinha' => $cart['cozinha'],
+                   'obs' => $cart['obs']
+               ]);
+
+               if ($pedido_product) {
+                   if ($cart['cozinha'] == 1) {
+                       $pedido_status = PedidosProductsStatu::create([
+                           'pedidos_products_id' => $pedido_product->id,
+                           'status_id' => 5,
+                           'data' => now(),
+                       ]);
+                   }
+               }
+
+               //Remover do carrinho
+               if (isset($carts[$key])) {
+                   unset($carts[$key]);
+                   session()->put('carrinho_pedidos', $carts);
+               }
+           }
+       }
+
+
+        return redirect()->route('pedidos.abrir')->with("sucesso", "Pedido Registado com sucesso!");
 
 
     }
 
-    public function finalizar(Request $request)
+    public function finalizar(Request $request, Mesa $mesa, $total)
     {
         $request->validate([
-            'troco'=>'required',
-            'dinheiro'=>'required',
-            'tpa'=>'required_if:dinheiro,null',
+            'troco' => 'required',
+            'dinheiro' => 'required',
+            'tpa' => 'required_if:dinheiro,null',
         ]);
+
+        $pedidos = DB::table('pedidos')
+            ->join('pedidos_products', 'pedidos_products.pedidos_id', 'pedidos.id')
+            ->join('status_mesas', 'status_mesas.id', 'pedidos_products.status_mesas_id')
+            ->join('status', 'status.id', 'status_mesas.status_id')
+            ->where('status_mesas.mesas_id', $mesa->id)
+            ->where('status.id', 1)
+            ->get();
+
+        // Caixa Está aberto ?
+        $caixa = Caixa::all()
+            ->where('users_id', auth()->id())
+            ->where('status', 1)
+            ->where('data_caixa', now());
+
+        if ($caixa->isEmpty())
+            return redirect()->back()->with('alerta', 'Lamento O Caixa actual está fechado!!')->withInput();
+
+        //Registar Caixa
+        $caixa->last()->update([
+            'total' => $caixa->last()->total + $total,
+        ]);
+
+        //Registar Factura
+        $factura = Factura::all()
+            ->where('ano', $request->ano)
+            ->where('tipos_id', 2)
+            ->last();
+        $factura_anterior = Factura::all()->last();
+
+
+        $numero = is_null($factura) ? 1 : $factura->numero + 1;
+
+        $request['valor_total'] = str_replace(',', '.', str_replace('.', '', $request->valor));
+        $request['data_emissao'] = now();
+        $request['users_id'] = auth()->id();
+        $request['numero'] = $numero;
+
+        $prev_hash = (is_null($factura_anterior)) ? null : $factura_anterior->hash;
+
+        $factura = Factura::create($request->all());
+        $dados = [
+            'numero' => $numero,
+            'valor_total' => $total,
+            'data_emissao' => now(),
+            'data_vencimento' => now(),
+            'clientes_id' => null,
+            'mes' => now()->format('m'),
+            'ano' => now()->format('Y'),
+            'users_id' => auth()->id(),
+            'moedas_id' => null,
+            'status' => 1,
+            'hash' => $prev_hash,
+            'tipos_id' => 2,
+            'retencao' => null,
+            'motivo_nc' => null,
+            'impostos_id' => null
+        ];
+        $factura = Factura::create($dados);
+
+        if ($factura) {
+            //Registar Factura Produtos
+            foreach ($pedidos as $pedido) {
+                FacturasProduct::create([
+                    'desconto' => null,
+                    'facturas_id' => $factura->id,
+                    'inventories_id' => $pedido->inventories_id,
+                    'qtd' => $pedido->qtd,
+                    'preco' => $pedido->preco,
+                ]);
+            }
+
+            $dinheiro = str_replace(',', '.', str_replace('.', '', $request->dinheiro));
+            $tpa = str_replace(',', '.', str_replace('.', '', $request->tpa));
+
+            //Registar Meio de Pagamento Factura
+            for ($i = 1; $i <= 2; $i++) {
+                FacturaMeioPagamento::create([
+                    'facturas_id' => 0,
+                    'meio_pagamentos_id' => $i,
+                    'valor' => $i == 1 ? $dinheiro : $tpa,
+                    'troco' => str_replace(',', '.', str_replace('.', '', $request->troco)),
+
+                ]);
+            }
+
+            //Mechar Status Mesa
+            $status_mesas = StatusMesa::all()->where('mesas_id', $mesa->id)->last();
+            StatusMesa::create([
+                'mesas_id' => $mesa->id,
+                'status_id' => 2,
+                'users_id' => auth()->id(),
+                'data' => now(),
+            ]);
+        }
+
+
+        return redirect()->back()->with('sucesso', 'Mesa Fechado com sucesso');
+
     }
 
     public function show(Pedido $pedido)
