@@ -19,7 +19,7 @@ class CreateFacturasTable extends Migration
             $table->decimal('valor_total', 10, 2)->nullable();
             $table->dateTime('data_emissao')->nullable();
             $table->date('data_vencimento')->nullable();
-            $table->foreignId('clientes_id')->constrained()->onUpdate('cascade');
+            $table->foreignId('clientes_id')->nullable()->constrained()->onUpdate('cascade');
             $table->string('mes', 45)->nullable();
             $table->integer('ano')->nullable();
             $table->foreignId('users_id')->nullable()->constrained()->onUpdate('cascade');

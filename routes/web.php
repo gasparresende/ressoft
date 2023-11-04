@@ -121,13 +121,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/input_products', InpuProductController::class);
     Route::resource('/companies', CompanyController::class);
     Route::resource('/shops', ShopController::class);
-    #Route::resource('/caixas', CaixaController::class)->parameters(['caixas'=>'cash'])->names(['edit'=>'caixas.editar']);
     Route::resource('/users_shops', UsersShopController::class);
 
 
-    //Caixas
-    Route::get('caixas/fechar', [CaixaCpController::class, 'fechar'])->name('caixas.fechar');
-    Route::get('productscaixas/listar', [CaixaCpController::class, 'listar'])->name('caixas.listar');
 
 
     //Despesas
@@ -153,7 +149,6 @@ Route::middleware(['auth'])->group(function () {
     //Relatorios
     Route::resource('/relatorios', RelatorioController::class);
 
-    Route::resource('/caixas', CaixaController::class);
     Route::resource('/contas', ContaController::class);
     Route::resource('/movimentos', ContaController::class);
     Route::resource('/balancetes', BalanceteController::class);
@@ -181,8 +176,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pedidos/finalizar/{mesa}/{total}', [PedidoController::class, 'finalizar'])->name('pedidos.finalizar');
     Route::resource('/pedidos', PedidoController::class);
 
-
+    Route::get('/report/{id}/facturas/preview', [FacturaController::class, 'preview_facturas'])->name('report.facturas.preview');
+    Route::get('/facturas/listar/', [FacturaController::class, 'listar'])->name('facturas.listar');
     Route::resource('/facturas', FacturaController::class);
+
+
+    //Caixas
+    Route::get('/caixas/fechar', [CaixaController::class, 'fechar'])->name('caixas.fechar');
+    Route::get('/caixas/listar', [CaixaController::class, 'listar'])->name('caixas.listar');
+    Route::resource('/caixas', CaixaController::class);
 
 
     //Seles
@@ -191,7 +193,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/seles', SeleController::class);
 });
 
-Route::resource('caixas', CaixaCpController::class)->middleware('auth:sanctum');
+
+
 
 
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome_banco', 145)->unique('nome_banco_UNIQUE');
             $table->string('sigla_banco', 45)->unique('sigla_banco_UNIQUE');
+            $table->timestamps();
         });
     }
 

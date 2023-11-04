@@ -96,11 +96,22 @@
                                 <div>
 
                                     @if(status_mesa($mesa->id) == 'Disponível')
-                                        <a class="btn btn-sm btn-success" data-toggle="modal" onclick="abrir_mesa({{$mesa->id}})" href="#"> Abrir </a>
+                                        <a class="btn btn-sm btn-success" data-toggle="modal"
+                                           onclick="abrir_mesa({{$mesa->id}})" href="#"> Abrir </a>
+
+                                    @elseif(status_mesa($mesa->id) == 'Fechado')
+                                        <a class="btn btn-sm btn-success" data-toggle="modal"
+                                           onclick="abrir_mesa({{$mesa->id}})" href="#"> Abrir </a>
+
+                                    @elseif(status_mesa($mesa->id) == 'Reservado')
+                                        <a class="btn btn-sm btn-success" data-toggle="modal"
+                                           onclick="abrir_mesa({{$mesa->id}})" href="#"> Abrir </a>
 
                                     @else
-                                        <a class="btn btn-sm btn-info" href="{{route('pedidos.mesas.detalhe', $mesa->id)}}"> Detalhe</a>
-                                        <a class="btn btn-sm btn-primary" href="{{route('pedidos.mesas.consumo', $mesa->id)}}"> Consusmo</a>
+                                        <a class="btn btn-sm btn-info"
+                                           href="{{route('pedidos.mesas.detalhe', $mesa->id)}}"> Detalhe</a>
+                                        <a class="btn btn-sm btn-primary"
+                                           href="{{route('pedidos.mesas.consumo', $mesa->id)}}"> Consusmo</a>
 
                                     @endif
 
@@ -131,7 +142,7 @@
                     <h4 class="modal-title text-center text-white">Abrir Mesa</h4>
 
                 </div>
-                <form action="{{route('mesas.abrir.store')}}" method="post" >
+                <form action="{{route('mesas.abrir.store')}}" method="post">
                     @csrf
                     <div class="modal-body">
 
@@ -151,7 +162,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Abrir </button>
+                        <button type="submit" class="btn btn-success">Abrir</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </form>

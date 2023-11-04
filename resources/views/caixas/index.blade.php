@@ -42,6 +42,59 @@
     <!-- /.container-fluid -->
 
 
+    <div class="modal abrir_caixa" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Abrir Caixa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{route('caixas.store')}}" method="post">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label for="">Utilizador*</label>
+                                <select required name="users_id" id="" class="form-control">
+                                    <option value="">-- select --</option>
+                                    @foreach($users as $user)
+                                        <option value="{{$user->id}}">{{$user->username}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="">Saldo Inicial *</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Kz</span>
+                                    </div>
+                                    <input required type="number" class="form-control" value="0"
+                                           aria-label="Amount (to the nearest dollar)" name="saldo_inicial">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="">Data *</label>
+                                <input required min="{{data_formatada(now(), 'Y-m-d')}}" value="{{data_formatada(now(), 'Y-m-d')}}" type="date" class="form-control" name="data_caixa">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Abrir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('js')
@@ -61,15 +114,23 @@
                     {data: 'username'},
                     {data: 'data_caixa'},
                     {data: 'saldo_inicial'},
-                    {data: 'saldo'},
-                    {data: 'status'},
+                    {data: 'total'},
                     {
                         "render": function (data, type, row) {
-                            return `<a title="Vizualizar Meios de Pagamentos" class="btn-sm btn-primary mr-1" href="#"><i class="fa fa-eye"></i></a>`+
+                            if (row.status == 1) {
+                                return `<span class="badge badge-success">Aberto</span>`
+                            } else {
+                                return `<span class="badge badge-danger">Fechado</span>`
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return `<a title="Vizualizar Meios de Pagamentos" class="btn-sm btn-primary mr-1" href="#"><i class="fa fa-eye"></i></a>` +
 
-                                    `<a  title="Fechar Caixa" data-toggle="modal" class="btn-sm btn-danger mr-1" href="#" ><i class="fa fa-times-circle"></i></a>`+
+                                `<a  title="Fechar Caixa" data-toggle="modal" class="btn-sm btn-danger mr-1" href="#" ><i class="fa fa-times-circle"></i></a>` +
 
-                                    `<a title="Relatório de Caixa" class="btn-sm btn-success" href="#"><i class="fa fa-file-pdf"></i></a>`
+                                `<a title="Relatório de Caixa" class="btn-sm btn-success" href="#"><i class="fa fa-file-pdf"></i></a>`
                         }
                     }
                 ]

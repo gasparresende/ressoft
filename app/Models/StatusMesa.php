@@ -14,6 +14,7 @@ class StatusMesa extends Model
         'status_id',
         'users_id',
         'data',
+        'data_fecho'
     ];
 
 

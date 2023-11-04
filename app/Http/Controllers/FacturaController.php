@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContasBancariaEmpresas;
 use App\Models\Factura;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTables;
 
 class FacturaController extends Controller
 {
@@ -14,7 +18,14 @@ class FacturaController extends Controller
      */
     public function index()
     {
-        return view('facturas.index');
+        $facturas = Factura::all()
+            ->where('tipo', 0)
+            ->where('status', 1);
+
+
+        return view('facturas.index', [
+            'facturas' => $facturas
+        ]);
 
     }
 
@@ -82,5 +93,90 @@ class FacturaController extends Controller
     public function destroy(Factura $factura)
     {
         //
+    }
+
+    public function listar()
+    {
+        $facturas = DB::table('facturas')
+            ->leftJoin('clientes', 'clientes.id', 'facturas.clientes_id')
+            ->join('tipos', 'tipos.id', 'facturas.tipos_id')
+            ->where('facturas.tipo', 0)
+            ->where('status', 1)
+            ->orderByDesc('data_emissao')
+            //->limit(20)
+            ->get([
+                '*',
+                'facturas.id as id',
+                'tipos.tipo as tipo',
+            ]);
+
+        $dados = [];
+        foreach ($facturas as $item) {
+            array_push($dados, [
+                'id' => $item->id,
+                'numero' => $item->sigla . ' ' . $item->numero . ' - ' . $item->mes . '/' . $item->ano,
+                'nome' => $item->nome == null ? 'Consumidor Final' : $item->nome,
+                'tipo' => $item->tipo,
+                'sigla' => $item->sigla,
+                'valor_total' => formatar_moeda($item->valor_total),
+                'data_emissao' => data_formatada($item->data_emissao),
+            ]);
+        }
+
+        return DataTables::of($dados)
+            ->make(true);
+    }
+
+
+    public function preview_facturas(Request $request, $imprimir = true)
+    {
+
+        //$facturas = Facturas::all()->where('id', $request->id);
+        $facturas = DB::table('facturas')
+            ->join('facturas_products', 'facturas_products.facturas_id', 'facturas.id')
+            ->join('inventories', 'inventories.id', 'facturas_products.inventories_id')
+            ->join('products', 'products.id', 'inventories.products_id')
+            ->leftJoin('clientes', 'clientes.id', 'facturas.clientes_id')
+            ->leftJoin('users', 'users.id', 'facturas.users_id')
+            ->leftjoin('unidades', 'unidades.id', 'products.unidades_id')
+            ->leftjoin('regimes', 'regimes.id', 'products.regimes_id')
+            ->leftjoin('moedas', 'moedas.id', 'facturas.moedas_id')
+            ->where('facturas.id', $request->id)
+            ->get(['*', 'inventories.id as id_servico', 'facturas.id as num', 'moedas.preco as pmoeda', 'facturas_products.preco as punitario']);
+dd($facturas);
+
+        $url = route('factura.qrcode', [
+            'id'=>$request->id,
+            'valor_total'=>$facturas->first()->valor_total,
+            'clientes_id'=>$facturas->first()->clientes_id,
+            'mes'=>$facturas->first()->mes,
+        ]);
+
+        $qrcode = base64_encode(QrCode::format('svg')->style('round')->size(75)->color(35, 107, 142)->errorCorrection('H')->generate($url));
+        $sigla = tipo_documento($facturas->first()->tipos_id)->sigla;
+        $tipo= tipo_documento($facturas->first()->tipos_id)->tipo." Nº ".$sigla;
+        if ($imprimir) {
+            $pdf = PDF::loadView('report.factura', [
+                'facturas' => $facturas,
+                'factura' => $facturas->first(),
+                'tipo' => $tipo,
+                't' => $sigla,
+                'bancos' => ContasBancariaEmpresas::all(),
+                'qrcode' => $qrcode,
+                'img' => true,
+            ]);
+            return $pdf->download($tipo.' - ' . $facturas->first()->numero . ' - ' . $facturas->first()->nome . '.pdf');
+        }
+
+
+        return view('report.factura', [
+            'facturas' => $facturas,
+            'factura' => $facturas->first(),
+            'tipo' => $tipo,
+            't' => $sigla,
+            'bancos' => ContasBancariaEmpresas::all(),
+            'qrcode' => $qrcode,
+            'img' => true,
+        ]);
     }
 }

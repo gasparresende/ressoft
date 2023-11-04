@@ -2,34 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\CaixaDataTable;
 use App\Models\Caixa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Redirect;
+use mysql_xdevapi\RowResult;
+use Yajra\DataTables\DataTables;
 
 class CaixaController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
 
     public function index()
     {
-        #return view('caixas.index');
-        $caixas = [];
-        return Inertia::render('Dashboard', [
-            'caixas' => $caixas
+        return view('caixas.index', [
+            'users' => User::all()
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function create()
     {
@@ -46,7 +45,7 @@ class CaixaController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -71,7 +70,7 @@ class CaixaController extends Controller
      * Display the specified resource.
      *
      * @param \App\Models\Caixa $produtos
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function show(Caixa $caixa)
     {
@@ -87,7 +86,7 @@ class CaixaController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param \App\Models\Caixa $produtos
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function edit(Caixa $caixa)
     {
@@ -104,7 +103,7 @@ class CaixaController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Caixa $produtos
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Caixa $caixa)
     {
@@ -119,7 +118,7 @@ class CaixaController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Models\Caixa $produtos
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Caixa $caixa)
     {
@@ -140,6 +139,7 @@ class CaixaController extends Controller
     }
 
 
+
     public function listar()
     {
         $caixas = DB::table('caixas')
@@ -149,7 +149,7 @@ class CaixaController extends Controller
                 'username',
                 'data_caixa',
                 'saldo_inicial',
-                'saldo',
+                'total',
                 'status',
             ]);
 

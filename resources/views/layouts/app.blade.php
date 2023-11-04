@@ -194,6 +194,7 @@
             <div id="menuVendas" class="collapse" aria-labelledby="headingPages" data-parent="#menuVendas">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item" href="{{route('pedidos.abrir')}}">Pedidos</a>
+                    <a class="collapse-item" href="{{route('facturas.index')}}">Facturas</a>
                     <a class="collapse-item" href="{{route('mesas.index')}}">Mesas</a>
 
                 </div>
@@ -497,41 +498,6 @@
 <!--Modal-->
 
 
-<div class="modal abrir_caixa" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Abrir Caixa</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="{{route('caixas.store')}}" method="post" >
-                @csrf
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label for="">Saldo Inicial *</label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Kz</span>
-                                </div>
-                                <input required type="number" class="form-control"
-                                       aria-label="Amount (to the nearest dollar)" name="saldo_inicial">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">.00</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Abrir</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <div class="modal fechar_caixa" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

@@ -25,6 +25,5 @@ class Factura extends Model
         'tipos_id',
         'retencao',
         'motivo_nc',
-        'impostos_id'
     ];
 }

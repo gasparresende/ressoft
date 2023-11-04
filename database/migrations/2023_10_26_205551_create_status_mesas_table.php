@@ -19,6 +19,7 @@ class CreateStatusMesasTable extends Migration
             $table->foreignId('status_id')->constrained('status');
             $table->foreignId('users_id')->nullable()->constrained();
             $table->dateTime('data');
+            $table->dateTime('data_fecho')->nullable();
             $table->timestamps();
         });
     }

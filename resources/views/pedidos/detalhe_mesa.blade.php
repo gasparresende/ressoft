@@ -111,6 +111,7 @@
                                         <th>Preço</th>
                                         <th>Status</th>
                                         <th>Total</th>
+                                        <th>Data Pedido</th>
                                     </tr>
                                     </thead>
 
@@ -122,11 +123,14 @@
                                             <td>{{formatar_moeda($pedido->preco)}}</td>
                                             <td>{{$pedido->statu}}</td>
                                             <td>{{formatar_moeda($pedido->preco * $pedido->qtd)}}</td>
+                                            <td>{{data_formatada($pedido->data, 'd-m-Y H:i:s')}}</td>
+
+
                                         </tr>
                                     @endforeach
                                     <tfoot>
                                     <tr>
-                                        <th colspan="4">Total</th>
+                                        <th colspan="5">Total</th>
                                         <th>{{$total}}</th>
                                     </tr>
                                     </tfoot>

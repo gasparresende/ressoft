@@ -24,12 +24,16 @@ function capitalizeNomeProprio($nome)
     return trim($nomeCapitalizado);
 }
 
+function tipo_documento($id)
+{
+    return \App\Models\Tipo::all()->find($id);
+}
+
 function status_mesa($mesas_id)
 {
     $status = DB::table('mesas')
         ->join('status_mesas', 'status_mesas.mesas_id', 'mesas.id')
         ->join('status', 'status.id', 'status_mesas.status_id')
-        ->limit(1)
         ->where('mesas.id', $mesas_id)->get();
 
     if ($status->isEmpty())
@@ -346,6 +350,8 @@ function isCaixaFechado()
         ->where('users_id', auth()->id())
         ->get()->last();
 
+    if ($caixa == null)
+        return true;
     return ($caixa->status) ? false : true;
 }
 

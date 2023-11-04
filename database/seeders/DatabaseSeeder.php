@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ContasBancariaEmpresas;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -25,6 +26,9 @@ class DatabaseSeeder extends Seeder
         $this->call(StatuSeeder::class); // Add this line
         $this->call(MeioPagamentoSeeder::class); // Add this line
         $this->call(TipoSeeder::class); // Add this line
+        $this->call(BancoSeeder::class); // Add this line
+        $this->call(EmpresaSeeder::class); // Add this line
+        $this->call(ContasBancariaEmpresasSeeder::class); // Add this line
 
     }
 }
