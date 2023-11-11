@@ -19,4 +19,9 @@ class Empresa extends Model
         'regimes_id',
         'taxas_id',
     ];
+
+    public function regimes()
+    {
+        return $this->belongsTo(Regime::class);
+    }
 }

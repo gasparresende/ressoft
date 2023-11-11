@@ -116,10 +116,15 @@
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group col-md-12">
+                        <div class="form-group col-md-4">
                             <label for="">Imagem </label>
                             <input type="file" class="form-control" name="imagem" value="{{old('imagem')}}">
 
+                        </div>
+
+                        <div class="form-group col-md-8">
+                            <label for="">Observação  </label>
+                            <input type="text" class="form-control" name="observacao" value="{{ old('observacao')}}">
                         </div>
                     </div>
 

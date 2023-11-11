@@ -23,6 +23,7 @@ class Product extends Model
         'regimes_id',
         'unidades_id',
         'imagem',
+        'observacao',
     ];
 
     public function units()

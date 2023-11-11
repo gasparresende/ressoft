@@ -348,7 +348,8 @@ class PedidoController extends Controller
             ->join('status', 'status.id', 'status_mesas.status_id')
             ->where('status_mesas.mesas_id', $mesa->id)
             ->where('status.id', 1)
-            ->where('status_mesas.data', now())
+            ->whereDate('status_mesas.data', Carbon::now())
+            //->where('status_mesas.data' , Carbon::now()->format('Y-m-d'))
             ->get();
 
 
@@ -368,7 +369,7 @@ class PedidoController extends Controller
 
         //Registar Factura
         $factura = Factura::all()
-            ->where('ano', $request->ano)
+            ->where('ano', Carbon::now())
             ->where('tipos_id', 2)
             ->last();
         $factura_anterior = Factura::all()->last();
@@ -409,8 +410,9 @@ class PedidoController extends Controller
 
             //Registar Factura Produtos
             foreach ($pedidos as $pedido) {
+
                 FacturasProduct::create([
-                    'desconto' => null,
+                    'desconto' => '0',
                     'facturas_id' => $factura->id,
                     'inventories_id' => $pedido->inventories_id,
                     'qtd' => $pedido->qtd,

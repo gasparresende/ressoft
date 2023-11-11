@@ -117,6 +117,19 @@
                     </div>
 
                     <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="">Imagem </label>
+                            <input readonly type="file" class="form-control" name="imagem" value="{{isset($product)? $product->imagem: old('imagem')}}">
+
+                        </div>
+
+                        <div class="form-group col-md-8">
+                            <label for="">Observação  </label>
+                            <input readonly type="text" class="form-control" name="observacao" value="{{isset($product)? $product->observacao: old('observacao')}}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <input class="btn btn-success mr-3" type="submit" value="Alterar">
                         <a class="btn btn-primary" href="{{route('products.index')}}">Voltar</a>
                     </div>

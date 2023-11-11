@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('regimes_id')->nullable()->constrained();
             $table->foreignId('unidades_id')->nullable()->constrained();
             $table->text('imagem')->nullable();
+            $table->text('observacao')->nullable();
             $table->timestamps();
         });
     }

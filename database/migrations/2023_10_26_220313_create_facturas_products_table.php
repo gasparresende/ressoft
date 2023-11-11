@@ -15,7 +15,7 @@ class CreateFacturasProductsTable extends Migration
     {
         Schema::create('facturas_products', function (Blueprint $table) {
             $table->id();
-            $table->decimal('deconto', 10,2);
+            $table->decimal('desconto', 10,2);
             $table->foreignId('facturas_id')->constrained();
             $table->foreignId('inventories_id')->constrained();
             $table->integer('qtd');

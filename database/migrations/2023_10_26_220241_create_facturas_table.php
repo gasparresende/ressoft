@@ -30,6 +30,7 @@ class CreateFacturasTable extends Migration
             $table->string('motivo_nc', 100)->nullable();
             $table->boolean('tipo')->nullable()->default(false);
             $table->foreignId('tipos_id')->nullable()->constrained()->onUpdate('cascade');
+            $table->foreignId('mesas_id')->nullable()->constrained()->onUpdate('cascade');
             $table->timestamps();
         });
     }

@@ -96,7 +96,7 @@
 
         <div class="text-left">
             @if($img)
-                <img src="{{url('storage/'.empresas()->logotipo_empresa)}}" alt=""
+                <img src="/storage/'{{empresas()->logotipo_empresa}}" alt=""
                      style="display: inline; width: 12%; position: absolute">
             @endif
 
@@ -165,24 +165,20 @@
             @foreach($facturas as $row)
 
                 @php
-                    $p_unit = $row->punitario/$factura->pmoeda;
-                    $valor_desc = ($p_unit - ($p_unit*($row->desconto/100))) *$row->qtd;
-                        $total += $p_unit * $row->qtd;
-                        $desconto +=$total*($row->desconto/100);
+                    $p_unit = $row->punitario/1;
 
-                        $retencao +=($row->tipo==1)? ($valor_desc)*(imposto($row->impostos_id)->taxa/100) : 0;
                         $codigo_isencao = !is_null($row->codigo)? " [$row->codigo] " : "";
                 @endphp
 
                 @for($i=1; $i<= 1; $i++)
                     <tr style="padding: 5px; font-size: 13px">
                         <td>{{$row->id_servico}}</td>
-                        <td>{{str_contains($row->servicos, 'Serviço')? $row->servicos.$codigo_isencao.' - Ref. '.$factura->mes : $row->servicos.$codigo_isencao}}</td>
+                        <td>{{str_contains($row->product, 'Serviço')? $row->servicos.$codigo_isencao.' - Ref. '.$factura->mes : $row->product.$codigo_isencao}}</td>
                         <td class="text-center">{{$row->qtd}}</td>
                         <td class="text-center">{{$row->unidade}}</td>
                         <td style="text-align: right">{{formatar_moeda($p_unit)}}</td>
                         <td class="text-center">{{$row->desconto}}</td>
-                        <td class="text-center">{{$row->taxa}} </td>
+                        <td class="text-center">taxa</td>
                         <td style="text-align: right">{{formatar_moeda( $p_unit * $row->qtd)}}</td>
                     </tr>
                 @endfor
@@ -190,7 +186,7 @@
             @endforeach
 
             @php
-                $taxa = empresas()->taxa/100;
+                $taxa = 0;
             @endphp
 
         </table>
@@ -218,7 +214,7 @@
                 @else
                     <tr>
                         <td>N/A</td>
-                        <td>{{taxas($row->taxas_id)}} %</td>
+                        <td>{{0}} %</td>
                         <td>{{formatar_moeda($total)}}</td>
                         <td>{{formatar_moeda(0)}} {{$factura->sigla_moeda}}</td>
                     </tr>
@@ -234,9 +230,9 @@
 
                 @foreach($bancos as $banco)
                     <tr>
-                        <td>{{$banco->bancos->sigla_banco}} (Akz)</td>
-                        <td>{{$banco->numero_conta_empresa}}</td>
-                        <td>{{$banco->iban_empresa}}</td>
+                        <td>{{0}} (Akz)</td>
+                        <td>{{0}}</td>
+                        <td>{{0}}</td>
                     </tr>
                 @endforeach
             </table>
@@ -265,7 +261,7 @@
                     <td>{{formatar_moeda($total*$taxa)}} {{$factura->sigla_moeda}}</td>
                 </tr>
                 <tr>
-                    <th>{{imposto($factura->impostos_id)->imposto}} ({{imposto($factura->impostos_id)->taxa}} %)</th>
+                    <th>0 %</th>
                     <td>{{formatar_moeda($retencao)}} {{$factura->sigla_moeda}}</td>
                 </tr>
                 <tr>

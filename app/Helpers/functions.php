@@ -1,12 +1,12 @@
 <?php
 
 use App\Models\Inventory;
-use App\Models\Razao;
-use App\Models\SubsidiosFuncionarios;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use phputil\extenso\Extenso;
+use Rawilk\Printing\Facades\Printing;
+
 
 function capitalizeNomeProprio($nome)
 {
@@ -86,11 +86,27 @@ function extenso($valor, $moeda)
     return capitalizeNomeProprio($res);
 }
 
+/*function empresas()
+{
+    //return \App\Models\Empresas::all()->first();
+    return \Illuminate\Support\Facades\DB::table('empresas')
+        ->leftJoin('contas_bancaria_empresas as cb', 'cb.empresas_id', 'empresas.id')
+        ->leftJoin('regimes', 'regimes.id', 'empresas.regimes_id')
+        ->leftJoin('taxas', 'taxas.id', 'empresas.taxas_id')
+        ->get()->first();
+}*/
+
+
 function empresas()
 {
     //return \App\Models\Empresas::all()->first();
     return \Illuminate\Support\Facades\DB::table('empresas')
         ->join('contas_bancaria_empresas as cb', 'cb.empresas_id', 'empresas.id')->get()->first();
+}
+
+function empresa()
+{
+    return \App\Models\Empresa::all()->first();
 }
 
 function formatar_moeda($valor)
@@ -147,6 +163,13 @@ function data_formatada($data, $formato = 'd-m-Y')
     if (is_null($data))
         return null;
     return date($formato, strtotime($data));
+}
+
+function imprimir($file){
+    $im = Printing::newPrintTask()
+        ->printer(env('PRINT_TERMICA'))
+        ->file($file)
+        ->send();
 }
 
 function getCurrentStock($paramentros)

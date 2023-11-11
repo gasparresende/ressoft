@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\ContasBancariaEmpresas;
 use App\Models\Factura;
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Yajra\DataTables\DataTables;
+
+//use Dompdf\Dompdf as PDF;
 
 class FacturaController extends Controller
 {
@@ -42,7 +45,7 @@ class FacturaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -53,7 +56,7 @@ class FacturaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Factura  $factura
+     * @param \App\Models\Factura $factura
      * @return \Illuminate\Http\Response
      */
     public function show(Factura $factura)
@@ -64,7 +67,7 @@ class FacturaController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Factura  $factura
+     * @param \App\Models\Factura $factura
      * @return \Illuminate\Http\Response
      */
     public function edit(Factura $factura)
@@ -75,8 +78,8 @@ class FacturaController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Factura  $factura
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Factura $factura
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Factura $factura)
@@ -87,7 +90,7 @@ class FacturaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Factura  $factura
+     * @param \App\Models\Factura $factura
      * @return \Illuminate\Http\Response
      */
     public function destroy(Factura $factura)
@@ -128,7 +131,7 @@ class FacturaController extends Controller
     }
 
 
-    public function preview_facturas(Request $request, $imprimir = true)
+    public function preview_facturas(Request $request, $termica = false, $imprimir = true)
     {
 
         //$facturas = Facturas::all()->where('id', $request->id);
@@ -142,20 +145,38 @@ class FacturaController extends Controller
             ->leftjoin('regimes', 'regimes.id', 'products.regimes_id')
             ->leftjoin('moedas', 'moedas.id', 'facturas.moedas_id')
             ->where('facturas.id', $request->id)
-            ->get(['*', 'inventories.id as id_servico', 'facturas.id as num', 'moedas.preco as pmoeda', 'facturas_products.preco as punitario']);
-dd($facturas);
+            ->groupBy('inventories.id')
+            ->selectRaw('*, sum(facturas_products.qtd) as qtd, inventories.id as id_servico, facturas.id as num, moedas.preco as pmoeda, facturas_products.preco as preco')
+            ->get();
+
 
         $url = route('factura.qrcode', [
-            'id'=>$request->id,
-            'valor_total'=>$facturas->first()->valor_total,
-            'clientes_id'=>$facturas->first()->clientes_id,
-            'mes'=>$facturas->first()->mes,
+            'id' => $request->id,
+            'valor_total' => $facturas->first()->valor_total,
+            'clientes_id' => $facturas->first()->clientes_id,
+            'mes' => $facturas->first()->mes,
         ]);
 
         $qrcode = base64_encode(QrCode::format('svg')->style('round')->size(75)->color(35, 107, 142)->errorCorrection('H')->generate($url));
         $sigla = tipo_documento($facturas->first()->tipos_id)->sigla;
-        $tipo= tipo_documento($facturas->first()->tipos_id)->tipo." Nº ".$sigla;
-        if ($imprimir) {
+        $tipo = tipo_documento($facturas->first()->tipos_id)->tipo . " Nº " . $sigla;
+
+        #$dompdf->setPaper('A5');
+        #$dompdf->setPaper([0, 0, 807.874, 221.102], 'landscape');
+        #$dompdf->setPaper([0, 0, 700, 300], 'landscape');
+        $customPaper = array(0, 0, 807.874, 222);
+
+        if ($termica) {
+            $pdf = PDF::loadView('report.factura_termica', [
+                'facturas' => $facturas,
+                'factura' => $facturas->first(),
+                'tipo' => $tipo,
+                't' => $sigla,
+                'bancos' => ContasBancariaEmpresas::all(),
+                'qrcode' => $qrcode,
+                'img' => true,
+            ])->setPaper($customPaper, 'landscape');
+        } else {
             $pdf = PDF::loadView('report.factura', [
                 'facturas' => $facturas,
                 'factura' => $facturas->first(),
@@ -165,11 +186,111 @@ dd($facturas);
                 'qrcode' => $qrcode,
                 'img' => true,
             ]);
-            return $pdf->download($tipo.' - ' . $facturas->first()->numero . ' - ' . $facturas->first()->nome . '.pdf');
+        }
+
+        if ($imprimir) {
+
+            $path = "print/file_imprimir.pdf";
+            $pdf->save($path);
+            imprimir($path);
+            return redirect()->back()->with('success', 'Factura impressa com sucesso!') ;
+
+        } else {
+
+
+            return $pdf->download($tipo . ' - ' . $facturas->first()->numero . ' - ' . $facturas->first()->nome . '.pdf');
+
         }
 
 
-        return view('report.factura', [
+    }
+
+    public function preview_facturas_consulta(Request $request, $termica = false, $imprimir = true)
+    {
+
+        //$facturas = Facturas::all()->where('id', $request->id);
+        $facturas = DB::table('facturas')
+            ->join('facturas_products', 'facturas_products.facturas_id', 'facturas.id')
+            ->join('inventories', 'inventories.id', 'facturas_products.inventories_id')
+            ->join('products', 'products.id', 'inventories.products_id')
+            ->leftJoin('clientes', 'clientes.id', 'facturas.clientes_id')
+            ->leftJoin('users', 'users.id', 'facturas.users_id')
+            ->leftjoin('unidades', 'unidades.id', 'products.unidades_id')
+            ->leftjoin('regimes', 'regimes.id', 'products.regimes_id')
+            ->leftjoin('moedas', 'moedas.id', 'facturas.moedas_id')
+            ->where('facturas.id', $request->id)
+            ->get(['*', 'inventories.id as id_servico', 'facturas.id as num', 'moedas.preco as pmoeda', 'facturas_products.preco as preco', 'facturas_products.qtd as qtd']);
+
+
+        $url = route('factura.qrcode', [
+            'id' => $request->id,
+            'valor_total' => $facturas->first()->valor_total,
+            'clientes_id' => $facturas->first()->clientes_id,
+            'mes' => $facturas->first()->mes,
+        ]);
+
+        $qrcode = base64_encode(QrCode::format('svg')->style('round')->size(75)->color(35, 107, 142)->errorCorrection('H')->generate($url));
+        $sigla = tipo_documento($facturas->first()->tipos_id)->sigla;
+        $tipo = tipo_documento($facturas->first()->tipos_id)->tipo . " Nº " . $sigla;
+        if ($imprimir) {
+
+            #$dompdf->setPaper('A5');
+            #$dompdf->setPaper([0, 0, 807.874, 221.102], 'landscape');
+            #$dompdf->setPaper([0, 0, 700, 300], 'landscape');
+            $customPaper = array(0, 0, 807.874, 222);
+
+            if ($termica) {
+                $pdf = PDF::loadView('report.factura_termica', [
+                    'facturas' => $facturas,
+                    'factura' => $facturas->first(),
+                    'tipo' => $tipo,
+                    't' => $sigla,
+                    'bancos' => ContasBancariaEmpresas::all(),
+                    'qrcode' => $qrcode,
+                    'img' => true,
+                ])->setPaper($customPaper, 'landscape');
+            } else {
+                $pdf = PDF::loadView('report.factura', [
+                    'facturas' => $facturas,
+                    'factura' => $facturas->first(),
+                    'tipo' => $tipo,
+                    't' => $sigla,
+                    'bancos' => ContasBancariaEmpresas::all(),
+                    'qrcode' => $qrcode,
+                    'img' => true,
+                ]);
+            }
+
+            return $pdf->download($tipo . ' - ' . $facturas->first()->numero . ' - ' . $facturas->first()->nome . '.pdf');
+        }
+
+
+    }
+
+    public function factura_hash(Request $request)
+    {
+
+
+        //$facturas = Facturas::all()->where('id', $request->id);
+        $facturas = DB::table('facturas')
+            ->join('facturas_products', 'facturas_products.facturas_id', 'facturas.id')
+            ->join('inventories', 'inventories.id', 'facturas_products.inventories_id')
+            ->join('products', 'products.id', 'inventories.products_id')
+            ->leftJoin('clientes', 'clientes.id', 'facturas.clientes_id')
+            ->leftJoin('users', 'users.id', 'facturas.users_id')
+            ->leftjoin('unidades', 'unidades.id', 'products.unidades_id')
+            ->leftjoin('regimes', 'regimes.id', 'products.regimes_id')
+            ->leftjoin('moedas', 'moedas.id', 'facturas.moedas_id')
+            ->where('facturas.id', $request->id)
+            ->get(['*', 'inventories.id as id_servico', 'facturas.id as num', 'moedas.preco as pmoeda', 'facturas_products.preco as punitario']);
+
+        $url = route('factura.qrcode', ['id' => $request->id, 'token' => $facturas->first()->hash]);
+        $qrcode = base64_encode(QrCode::format('svg')->style('dot')->size(75)->color(35, 107, 142)->errorCorrection('H')->generate($url));
+
+        $sigla = tipo_documento($facturas->first()->tipos_id)->sigla;
+        $tipo = tipo_documento($facturas->first()->tipos_id)->tipo . " Nº " . $sigla;
+
+        $pdf = PDF::loadView('report.factura', [
             'facturas' => $facturas,
             'factura' => $facturas->first(),
             'tipo' => $tipo,
@@ -178,5 +299,6 @@ dd($facturas);
             'qrcode' => $qrcode,
             'img' => true,
         ]);
+        return $pdf->download($tipo . ' - ' . $facturas->first()->numero . ' - ' . $facturas->first()->nome . '.pdf');
     }
 }

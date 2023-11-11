@@ -36,6 +36,7 @@ use App\Models\Product;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Rawilk\Printing\Facades\Printing;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,6 +72,11 @@ Route::get('/', function () {
 
 Route::post('/login', [UsersController::class, 'login'])->name('login');
 Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
+
+
+//ACesso Livre
+Route::get('relatorios/cardapio', [RelatorioController::class, 'cardapio'])->name('relatorios.cardapio');
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [UsersController::class, 'home'])->name('home');
@@ -176,16 +182,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pedidos/finalizar/{mesa}/{total}', [PedidoController::class, 'finalizar'])->name('pedidos.finalizar');
     Route::resource('/pedidos', PedidoController::class);
 
+    Route::get('/factura/{id}/qrcode/', [FacturaController::class, 'factura_hash'])->name('factura.qrcode');
     Route::get('/report/{id}/facturas/preview', [FacturaController::class, 'preview_facturas'])->name('report.facturas.preview');
+    Route::get('/report/{id}/facturas/termica', [FacturaController::class, 'preview_termica'])->name('report.facturas.termica');
     Route::get('/facturas/listar/', [FacturaController::class, 'listar'])->name('facturas.listar');
     Route::resource('/facturas', FacturaController::class);
-
 
     //Caixas
     Route::get('/caixas/fechar', [CaixaController::class, 'fechar'])->name('caixas.fechar');
     Route::get('/caixas/listar', [CaixaController::class, 'listar'])->name('caixas.listar');
     Route::resource('/caixas', CaixaController::class);
-
 
     //Seles
     Route::get('/seles/next', [SeleController::class, 'next'])->name('seles.next');
@@ -194,8 +200,15 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+Route::get('/impressora', function () {
 
+    $printers = Printing::printers();
 
+    foreach ($printers as $printer) {
+        echo $printer->name()."<br>";
+    }
+
+})->name('impressora');
 
 
 Route::get('teste', function () {
@@ -210,7 +223,6 @@ Route::get('teste', function () {
     }
     echo "ok";
 });
-
 
 Route::fallback(function () {
     echo "Página não encontrada";
