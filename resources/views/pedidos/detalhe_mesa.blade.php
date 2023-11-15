@@ -67,6 +67,12 @@
 
                 <a class="btn btn-primary" href="{{route('pedidos.abrir')}}">Voltar</a>
 
+                @if(isCaixaFechado())
+
+                    <a class="btn btn-danger" href="/caixas/abrir">Abrir Caixa <i
+                            class="fa fa-file-invoice-dollar"></i></a>
+                @endif
+
                 @if(detalhes_mesas($mesa->id))
                     @if($pedidos)
                         <a class="btn btn-dark" href="#">Imprimir Consulta <i

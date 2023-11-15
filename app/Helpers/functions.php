@@ -114,6 +114,25 @@ function formatar_moeda($valor)
     return number_format($valor, '2', ',', '.');
 }
 
+function meio_pagamento($caixas_id)
+{
+    $cash= DB::table('caixa_meio_pagamentos')
+        ->where('caixas_id', $caixas_id)
+        ->where('meios_pagamentos_id', 1)
+        ->get()->last();
+
+    $tpa= DB::table('caixa_meio_pagamentos')
+        ->where('caixas_id', $caixas_id)
+        ->where('meios_pagamentos_id', 2)
+        ->get()->last();
+
+    return [
+        'cash' => $cash ? $cash->valor : null,
+        'tpa' => $tpa ? $tpa->valor : 0,
+    ];
+
+}
+
 function total_carrinho()
 {
     $total = 0;

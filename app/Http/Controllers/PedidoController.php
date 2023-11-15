@@ -36,10 +36,15 @@ class PedidoController extends Controller
             ->where('qtd', '>', 0)
             ->get();
 
+        $users = User::all();
+        if (!auth()->user()->hasRole('Admin')) {
+            $users = User::all()->where('id', auth()->id());
+        }
+
         return view('pedidos.abrir', [
             //'pedidos' => PedidosProduct::all(),
             'mesas' => Mesa::all(),
-            'users' => User::all(),
+            'users' => $users,
             // 'status' => Statu::all()->whereIn('id', [1, 4]),
         ]);
     }
@@ -51,6 +56,15 @@ class PedidoController extends Controller
             ->with('colors')->with('categorias')->with('marcas')
             ->where('qtd', '>', 0)
             ->get();
+
+        if (!auth()->user()->hasRole('Admin')) {
+            $shops_users = DB::table('users_shops')->where('users_id', auth()->id())->get();
+           $produtos = Inventory::with('products')->with('sizes')
+                ->with('colors')->with('categorias')->with('marcas')
+                ->where('qtd', '>', 0)
+                ->whereIn('shops_id', $shops_users->pluck('shops_id'))
+                ->get();
+        }
 
         if (status_mesa($mesa->id) != 'Aberto') {
             return redirect()->route('pedidos.abrir')->with('erro', 'Lamento! Esta Mesa não está aberta');
@@ -306,6 +320,10 @@ class PedidoController extends Controller
                             'data' => now(),
                         ]);
                     }
+
+                    //Dar baixa no Stock
+                    //Feito por trigger
+
                 }
 
                 //Remover do carrinho

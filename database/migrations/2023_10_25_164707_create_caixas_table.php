@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('users_id')->constrained();
             $table->decimal('saldo_inicial', 10)->nullable()->default(0);
             $table->decimal('total', 10)->nullable()->default(0);
+            $table->decimal('diferenca', 10)->nullable()->default(0);
             $table->timestamps();
         });
     }

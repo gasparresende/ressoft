@@ -25,6 +25,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(\Illuminate\Contracts\Auth\Access\Gate $gate)
     {
-
+        Gate::after(function ($user, $ability) {
+            return $user->hasRole('Admin'); // note this returns boolean
+        });
     }
 }

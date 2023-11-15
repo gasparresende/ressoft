@@ -3,7 +3,6 @@
 use App\Http\Controllers\AlunosController;
 use App\Http\Controllers\BalanceteController;
 use App\Http\Controllers\CaixaController;
-use App\Http\Controllers\CaixaCpController;
 use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\CarrinhoMeioPagamentoController;
 use App\Http\Controllers\CategoryController;
@@ -33,10 +32,13 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UsersShopController;
 use App\Models\Balancete;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Rawilk\Printing\Facades\Printing;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,7 +76,7 @@ Route::post('/login', [UsersController::class, 'login'])->name('login');
 Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
 
 
-//ACesso Livre
+Route::post('relatorios/vendas', [RelatorioController::class, 'relatorio_venda'])->name('relatorios.vendas');
 Route::get('relatorios/cardapio', [RelatorioController::class, 'cardapio'])->name('relatorios.cardapio');
 
 
@@ -104,7 +106,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/inventories/exportar', [InventoryController::class, 'exportar'])->name('inventories.export');
 
 
-
     //Carrinho de Produtos
     Route::post('/carrinho/adicionar', [CarrinhoController::class, 'adicionar'])->name('carrinho.adicionar');
     Route::get('/carrinho/{id}/remover', [CarrinhoController::class, 'remover'])->name('carrinho.remover');
@@ -121,15 +122,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('inventories/transferencias', [InventoryController::class, 'transferencias'])->name('inventories.transferencias');
 
 
-
     Route::resource('/categories', CategoryController::class);
     Route::resource('/inventories', InventoryController::class);
     Route::resource('/input_products', InpuProductController::class);
     Route::resource('/companies', CompanyController::class);
     Route::resource('/shops', ShopController::class);
     Route::resource('/users_shops', UsersShopController::class);
-
-
 
 
     //Despesas
@@ -189,8 +187,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/facturas', FacturaController::class);
 
     //Caixas
+    Route::post('/caixas/relatorio', [CaixaController::class, 'relatorio_geral'])->name('caixas.relatorio.geral');
+    Route::post('/caixas/fechar', [CaixaController::class, 'fechar_store'])->name('caixas.fechar');
     Route::get('/caixas/fechar', [CaixaController::class, 'fechar'])->name('caixas.fechar');
     Route::get('/caixas/listar', [CaixaController::class, 'listar'])->name('caixas.listar');
+    Route::get('/caixas/abrir', [CaixaController::class, 'abrir'])->name('caixas.abrir');
     Route::resource('/caixas', CaixaController::class);
 
     //Seles
@@ -205,7 +206,7 @@ Route::get('/impressora', function () {
     $printers = Printing::printers();
 
     foreach ($printers as $printer) {
-        echo $printer->name()."<br>";
+        echo $printer->name() . "<br>";
     }
 
 })->name('impressora');
@@ -223,6 +224,196 @@ Route::get('teste', function () {
     }
     echo "ok";
 });
+
+//Permissions Define
+Route::get('/salvar_permissao', function () {
+
+    $dados = [
+        'create',
+        'read',
+        'update',
+        'delete',
+        'export',
+        'import',
+
+        'acessos',
+        'users',
+        'funcao',
+        'permissao',
+        'permissao_funcao',
+        'permissao_users',
+        'funcao_users',
+
+        'utilitarios',
+        'empresas',
+        'lojas',
+        'users_lojas',
+
+        'financas',
+        'caixas',
+        'contas',
+        'movimentos',
+        'balancentes',
+
+        'relatorios',
+
+        'produtos',
+        'cadastros',
+        'estoques',
+        'entrada_estoques',
+        'saida_estoques',
+        'transferencia_estoques',
+        'inventario',
+
+        'vendas',
+        'pedidos',
+        'facturas',
+        'mesas',
+    ];
+
+    foreach ($dados as $key => $dado) {
+        $permission = Permission::all()->where('name', $dado);
+
+        if ($permission->isEmpty()) {
+            Permission::create(['name' => $dado]);
+        }
+
+    }
+    echo "Permissão salva";
+
+});
+
+Route::get('/salvar_roles', function () {
+    /*\Spatie\Permission\Models\Role::all()->find(1)->delete();*/
+
+    $dados = [
+        'Admin',
+        'Gerente',
+        'Caixa',
+        'Assistente Venda',
+        'Garçon',
+    ];
+
+    foreach ($dados as $key => $dado) {
+        $role = Role::all()->where('name', $dado);
+
+        if ($role->isEmpty()) {
+            Role::create(['name' => $dado]);
+        }
+    }
+    echo "Roles salva";
+});
+
+Route::get('/permissao', function () {
+
+    //  $role = Role::create([
+    //     'name' => 'Admin'
+    //  ]);
+
+    $user = User::all()->find(auth()->id());
+    $user->assignRole('Admin');
+    //Atribuiir permissão a uma função
+    /*$role = Role::create(['name' => 'writer']);
+    $permission = Permission::create(['name' => 'edit articles']);
+    $role->givePermissionTo($permission);
+    $permission->assignRole($role);
+
+    //Remover permissão a função
+    $role->revokePermissionTo($permission);
+    $permission->removeRole($role);*/
+});
+
+Route::get('/permissao_role', function () {
+
+    $role = Role::all()->where('name', 'Gerente')->first();
+
+    $dados_assistente = [
+        'create',
+        'read',
+        'update',
+        'delete',
+        'export',
+        'import',
+
+        'relatorios',
+
+        'vendas',
+        'pedidos',
+        'facturas',
+        'mesas',
+    ];
+
+    $dados_gerente = [
+        'create',
+        'read',
+        'update',
+        'delete',
+        'export',
+        'import',
+
+        'utilitarios',
+        'empresas',
+        'lojas',
+        'users_lojas',
+
+        'financas',
+        'caixas',
+        'contas',
+        'movimentos',
+        'balancentes',
+
+        'relatorios',
+
+        'produtos',
+        'cadastros',
+        'estoques',
+        'entrada_estoques',
+        'saida_estoques',
+        'transferencia_estoques',
+        'inventario',
+
+        'vendas',
+        'pedidos',
+        'facturas',
+        'mesas',
+    ];
+
+
+    foreach ($dados_gerente as $key => $dado) {
+        $permission = Permission::all()->where('name', $dado)->first();
+
+        $role_has_permission = DB::table('role_has_permissions')
+            ->where('permission_id', $permission->id)
+            ->where('role_id', $role->id)->get();
+
+        if ($role_has_permission->isEmpty()) {
+            $role->givePermissionTo($dado); //Atribuir permissao a Role
+            echo "Adicionado - " . $dado . "<br>";
+        }
+    }
+    echo "Nenhuma permissão nova";
+});
+
+Route::get('/user_permission', function () {
+
+    $user = User::all()->find(auth()->id());
+
+    //Atribuir Permissao ao users
+    $user->givePermissionTo(
+        [
+            'menu_register',
+        ]
+    );
+    echo "feito";
+});
+
+Route::get('/user_role', function () {
+
+    $user = User::all()->find(auth()->id());
+    $user->assignRole('Gerente'); //Atribuir Role ao usuario
+    echo "feito";
+});
+
 
 Route::fallback(function () {
     echo "Página não encontrada";

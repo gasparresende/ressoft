@@ -76,6 +76,19 @@ return new class extends Migration {
                     (new.products_id, new.destino, new.sizes_id, new.colors_id, new.marcas_id, new.categorias_id, new.qtd, new.validade, new.data, "Entradas de Transferência", new.users_id, now());
             END;'
         );
+
+        //Criar Trigger para Dar baixa no Stock
+        DB::unprepared('
+        CREATE TRIGGER `actualizar_after_insert_pedidos_products` AFTER INSERT ON `pedidos_products`
+            FOR EACH ROW BEGIN
+                 CREATE TRIGGER `actualizar_after_insert_pedidos_products` AFTER INSERT ON `pedidos_products`
+            FOR EACH ROW BEGIN
+                UPDATE inventories set qtd = qtd - NEW.qtd
+                where id = new.inventories_id;
+	        END;
+
+	        END;'
+        );
     }
 
     /**
@@ -89,5 +102,6 @@ return new class extends Migration {
         DB::unprepared('DROP TRIGGER `actualizar_after_insert_entradas`');
         DB::unprepared('DROP TRIGGER `actualizar_after_insert_saidass`');
         DB::unprepared('DROP TRIGGER `transferencias_after_insert`');
+        DB::unprepared('DROP TRIGGER `actualizar_after_insert_pedidos_products`');
     }
 };

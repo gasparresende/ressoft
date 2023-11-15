@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('caixas_id')->constrainted();
             $table->foreignId('meios_pagamentos_id')->constrainted();
             $table->decimal('valor', 10)->nullable()->default(0);
-            $table->decimal('troco', 10, 0)->nullable()->default(0);
             $table->timestamps();
         });
     }

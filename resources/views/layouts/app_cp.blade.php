@@ -17,8 +17,7 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('sbadmin2/css/sb-admin-2.min.css' ) }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
     <!--    Autocomplete-->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
@@ -36,21 +35,20 @@
 
     <style>
 
-        .form-control {
+        .form-control{
             /*text-transform: uppercase;*/
             border: 1px solid black;
         }
 
-        .card-body label {
+        .card-body label{
             color: black;
             font-weight: bold;
         }
 
-        .tabela {
+        .tabela{
             border: 1px solid #a5a9ad;
         }
-
-        tr td {
+        tr td{
             font-weight: normal;
         }
     </style>
@@ -91,71 +89,41 @@
         </div>
 
         <!-- Nav Item - Pages Collapse Menu -->
-        @can('acessos')
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                   aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Acessos</span>
-                </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Permissões de Acesso</h6>
-                        @can('users')
-                            <a class="collapse-item" href="{{route('users.index')}}">Users</a>
-                        @endcan
-
-                        @can('funcao')
-                            <a class="collapse-item" href="{{route('roles.index')}}">Função</a>
-                        @endcan
-
-                        @can('permissao')
-                            <a class="collapse-item" href="{{route('permissions.index')}}">Permissão</a>
-                        @endcan
-
-                        @can('permissao_funcao')
-                            <a class="collapse-item" href="{{route('permissions_roles.index')}}">Permissão | Função</a>
-                        @endcan
-
-                        @can('permissao_users')
-                            <a class="collapse-item" href="{{route('permissions_users.index')}}">Permissão | Users</a>
-                        @endcan
-
-                        @can('funcao_users')
-                            <a class="collapse-item" href="{{route('roles_users.index')}}">Função | Users</a>
-                        @endcan
-                    </div>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+               aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>Acessos</span>
+            </a>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Permissões de Acesso</h6>
+                    <a class="collapse-item" href="{{route('users.index')}}">Users</a>
+                    <a class="collapse-item" href="{{route('roles.index')}}">Função</a>
+                    <a class="collapse-item" href="{{route('permissions.index')}}">Permissão</a>
+                    <a class="collapse-item" href="{{route('permissions_roles.index')}}">Permissão | Função</a>
+                    <a class="collapse-item" href="{{route('permissions_users.index')}}">Permissão | Users</a>
+                    <a class="collapse-item" href="{{route('roles_users.index')}}">Função | Users</a>
                 </div>
-            </li>
-        @endcan
+            </div>
+        </li>
 
         <!-- Nav Item - Utilities Collapse Menu -->
-        @can('utilitarios')
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                   aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span>Utilitário</span>
-                </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                     data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-
-                        @can('empresas')
-                            <a class="collapse-item" href="{{route('empresas.index')}}">Empresas</a>
-                        @endcan
-
-                        @can('lojas')
-                            <a class="collapse-item" href="{{route('shops.index')}}">Lojas</a>
-                        @endcan
-
-                        @can('users_lojas')
-                            <a class="collapse-item" href="{{route('users_shops.index')}}">Usuário - Lojas</a>
-                        @endcan
-                    </div>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+               aria-expanded="true" aria-controls="collapseUtilities">
+                <i class="fas fa-fw fa-wrench"></i>
+                <span>Utilitário</span>
+            </a>
+            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                 data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="{{route('empresas.index')}}">Empresas</a>
+                    <a class="collapse-item" href="{{route('shops.index')}}">Lojas</a>
+                    <a class="collapse-item" href="{{route('users_shops.index')}}">Usuário - Lojas</a>
                 </div>
-            </li>
-        @endcan
+            </div>
+        </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -166,106 +134,72 @@
               </div>-->
 
         <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#financas"
+               aria-expanded="true" aria-controls="collapsePages">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>Finanças</span>
+            </a>
+            <div id="financas" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <!--            <h6 class="collapse-header">Login Screens:</h6>-->
+                    <a class="collapse-item" href="{{route('caixas.index')}}">Caixas</a>
+                    <a class="collapse-item" href="{{route('contas.index')}}">Contas</a>
+                    <a class="collapse-item" href="{{route('movimentos.index')}}">Movimentos</a>
+                    <a class="collapse-item" href="{{route('balancetes.index')}}">Balancete</a>
 
-        @can('financas')
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#financas"
-                   aria-expanded="true" aria-controls="collapsePages">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Finanças</span>
-                </a>
-                <div id="financas" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <!--            <h6 class="collapse-header">Login Screens:</h6>-->
-                        @can('caixas')
-                            <a class="collapse-item" href="{{route('caixas.index')}}">Caixas</a>
-                        @endcan
-
-                        @can('contas')
-                            <a class="collapse-item" href="{{route('contas.index')}}">Contas</a>
-                        @endcan
-
-                        @can('movimentos')
-                            <a class="collapse-item" href="{{route('movimentos.index')}}">Movimentos</a>
-                        @endcan
-                        @can('balancetes')
-                            <a class="collapse-item" href="{{route('balancetes.index')}}">Balancete</a>
-                        @endcan
-                    </div>
                 </div>
-            </li>
-        @endcan
+            </div>
+        </li>
 
         <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#relatorios"
+               aria-expanded="true" aria-controls="collapsePages">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>Relatórios</span>
+            </a>
+            <div id="relatorios" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <!--            <h6 class="collapse-header">Login Screens:</h6>-->
+                    <a class="collapse-item" href="{{route('relatorios.index')}}">Relatórios</a>
 
-        @can('relatorios')
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#relatorios"
-                   aria-expanded="true" aria-controls="collapsePages">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Relatórios</span>
-                </a>
-                <div id="relatorios" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <!--            <h6 class="collapse-header">Login Screens:</h6>-->
-                        <a class="collapse-item" href="{{route('relatorios.index')}}">Relatórios</a>
-
-                    </div>
                 </div>
-            </li>
-        @endcan
+            </div>
+        </li>
 
         <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+               aria-expanded="true" aria-controls="collapsePages">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>Produtos</span>
+            </a>
+            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <!--            <h6 class="collapse-header">Login Screens:</h6>-->
+                    <a class="collapse-item" href="{{route('products.index')}}">Cadastro</a>
+                    <a class="collapse-item" href="{{route('inventories.index')}}">Estoque</a>
 
-        @can('produtos')
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-                   aria-expanded="true" aria-controls="collapsePages">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Produtos</span>
-                </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <!--            <h6 class="collapse-header">Login Screens:</h6>-->
-                        @can('cadastros')
-                            <a class="collapse-item" href="{{route('products.index')}}">Cadastro</a>
-                        @endcan
-
-                        @can('estoques')
-                            <a class="collapse-item" href="{{route('inventories.index')}}">Estoque</a>
-                        @endcan
-
-                    </div>
                 </div>
-            </li>
-        @endcan
+            </div>
+        </li>
 
-        @can('vendas')
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#menuVendas"
-                   aria-expanded="true" aria-controls="menuVendas">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Vendas</span>
-                </a>
-                <div id="menuVendas" class="collapse" aria-labelledby="headingPages" data-parent="#menuVendas">
-                    <div class="bg-white py-2 collapse-inner rounded">
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#menuVendas"
+               aria-expanded="true" aria-controls="menuVendas">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>Vendas</span>
+            </a>
+            <div id="menuVendas" class="collapse" aria-labelledby="headingPages" data-parent="#menuVendas">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="{{route('pedidos.abrir')}}">Pedidos</a>
+                    <a class="collapse-item" href="{{route('facturas.index')}}">Facturas</a>
+                    <a class="collapse-item" href="{{route('mesas.index')}}">Mesas</a>
 
-                        @can('pedidos')
-                            <a class="collapse-item" href="{{route('pedidos.abrir')}}">Pedidos</a>
-                        @endcan
-
-                        @can('facturas')
-                            <a class="collapse-item" href="{{route('facturas.index')}}">Facturas</a>
-                        @endcan
-
-                        @can('mesas')
-                            <a class="collapse-item" href="{{route('mesas.index')}}">Mesas</a>
-                        @endcan
-
-                    </div>
                 </div>
-            </li>
-        @endcan
+            </div>
+        </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
@@ -390,8 +324,7 @@
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">
-                  {{ auth()->user()->username }} | <span class="font-weight-bold text-primary">{{ loja() }} </span>
-                    | <span class="font-weight-bold text-danger">{{auth()->user()->getRoleNames()}}</span>
+                  {{ auth()->user()->username }} | <span class="font-weight-bold text-primary">{{ loja() }}</span>
                 </span>
                                 <img class="img-profile rounded-circle"
                                      src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
@@ -542,7 +475,7 @@
                 'categorias_id': categorias_id.val(),
                 'validade': validade.val(),
             },
-            success: function (data) {
+            success: function (data){
                 console.log(data)
                 $(resultado).val(data)
             }
@@ -565,7 +498,8 @@
 <!--Modal-->
 
 
-<div class="modal fechar_caixa_cp" tabindex="-1" role="dialog">
+
+<div class="modal fechar_caixa" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -574,13 +508,13 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="#" method="post">
+            <form action="#" method="post" >
                 @csrf
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
                             <label for="">Valor Total *</label>
-                            <input required type="number" class="form-control valor_total">
+                            <input required type="number" class="form-control valor_total" >
                         </div>
                     </div>
                 </div>

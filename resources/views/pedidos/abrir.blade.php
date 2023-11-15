@@ -108,10 +108,24 @@
                                            onclick="abrir_mesa({{$mesa->id}})" href="#"> Abrir </a>
 
                                     @else
-                                        <a class="btn btn-sm btn-info"
-                                           href="{{route('pedidos.mesas.detalhe', $mesa->id)}}"> Detalhe</a>
-                                        <a class="btn btn-sm btn-primary"
-                                           href="{{route('pedidos.mesas.consumo', $mesa->id)}}"> Consusmo</a>
+
+                                        @if(auth()->user()->hasRole('Admin'))
+                                            <a class="btn btn-sm btn-info"
+                                               href="{{route('pedidos.mesas.detalhe', $mesa->id)}}"> Detalhe</a>
+                                            <a class="btn btn-sm btn-primary"
+                                               href="{{route('pedidos.mesas.consumo', $mesa->id)}}"> Consusmo</a>
+
+                                        @else
+                                           @if(garcon($mesa->id) == auth()->user()->username)
+                                                <a class="btn btn-sm btn-info"
+                                                   href="{{route('pedidos.mesas.detalhe', $mesa->id)}}"> Detalhe</a>
+                                                <a class="btn btn-sm btn-primary"
+                                                   href="{{route('pedidos.mesas.consumo', $mesa->id)}}"> Consusmo</a>
+                                           @endif
+
+
+
+                                        @endif
 
                                     @endif
 

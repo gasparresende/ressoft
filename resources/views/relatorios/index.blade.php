@@ -11,8 +11,12 @@
         <h1 class="h3 mb-2 text-gray-800">Gestão de Relatórios</h1>
 
         <div class="text-left mb-2">
-            <a class="btn btn-dark" href="">Produtos <i class="fa fa-dollar-sign"></i></a>
-            <a class="btn btn-dark" href="{{route('relatorios.cardapio')}}">Cardápio Digital <i class="fa fa-history"></i></a>
+            <a class="btn btn-dark" href="{{route('relatorios.cardapio')}}">Cardápio Digital <i
+                    class="fa fa-history"></i></a>
+            <a class="btn btn-dark" id="click_relatorio_vendas" href="#">Vendas<i class="fa fa-cart-plus"></i></a>
+            <a class="btn btn-dark" id="click_relatorio_caixas" href="#">Caixa<i class="fa fa-cart-plus"></i></a>
+            <a class="btn btn-dark" id="click_relatorio_produtos" href="#">Produtos <i class="fa fa-dollar-sign"></i></a>
+
         </div>
 
         <!-- DataTales Example -->
@@ -21,18 +25,75 @@
                 <h6 class="m-0 font-weight-bold text-primary">Listar Todos</h6>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped" id="ralatorios">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Número</th>
-                            <th>Açoes</th>
-                        </tr>
-                        </thead>
 
-                    </table>
+                <div id="relatorio_vendas" >
+                    <h4 class="mb-3 text-primary">Relatório de Venda</h4>
+
+                    <form action="{{route('relatorios.vendas')}}" method="post">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="">Utilizador</label>
+                                <select name="users_id" id="" class="form-control">
+                                    <option value="">Selecione</option>
+                                    @foreach($users as $user)
+                                        <option value="{{$user->id}}">{{$user->username}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="">Loja</label>
+                                <select name="shops_id" id="" class="form-control">
+                                    <option value="">Selecione</option>
+                                    @foreach($lojas as $loja)
+                                        <option value="{{$loja->id}}">{{$loja->loja}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="">Data Inicial</label>
+                                <input required  value="{{data_formatada(now(), 'Y-m-d')}}" name="data1" type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="">Data Final</label>
+                                <input required name="data2"  value="{{data_formatada(now(), 'Y-m-d')}}"  type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="mt-3 text-right">
+                            <input class="btn btn-dark" type="submit" value="Gerar Relatório">
+
+                        </div>
+                    </form>
+
                 </div>
+
+                <div id="relatorio_caixas" >
+                    <h4 class="mb-3 text-primary">Relatório de Caixa</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Utilizador</label>
+                            <select name="users_id" id="" class="form-control">
+                                <option value="">Selecione</option>
+                                @foreach($users as $user)
+                                    <option value="{{$user->id}}">{{$user->username}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="">Data</label>
+                            <input name="data" type="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mt-3 text-right">
+                        <input class="btn btn-dark" type="submit" value="Gerar Relatório">
+
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -46,6 +107,20 @@
     <script>
         $(function () {
 
+            $('#relatorio_vendas').hide();
+            $('#relatorio_caixas').hide();
+
+
+            $('#click_relatorio_vendas').click(function () {
+                $('#relatorio_caixas').hide();
+                $('#relatorio_vendas').show();
+            })
+
+
+            $('#click_relatorio_caixas').click(function () {
+                $('#relatorio_vendas').hide();
+                $('#relatorio_caixas').show();
+            })
         })
     </script>
 

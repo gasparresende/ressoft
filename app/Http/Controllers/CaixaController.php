@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\DataTables\CaixaDataTable;
 use App\Models\Caixa;
+use App\Models\CaixaMeioPagamento;
+use App\Models\MeioPagamento;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +23,7 @@ class CaixaController extends Controller
     public function index()
     {
         return view('caixas.index', [
-            'users' => User::all()
+            'users' => User::all(),
         ]);
     }
 
@@ -61,6 +63,25 @@ class CaixaController extends Controller
         ]);
         if ($caixa) {
             return redirect()->route('caixas.index')->with('sucesso', 'Caixa Aberto com sucesso!');
+        } else {
+            return redirect()->back()->with('erro', 'Erro ao Abrir Caixa');
+        }
+    }
+
+    public function abrir()
+    {
+        if (!isCaixaFechado())
+            return redirect()->back()->with('alerta', 'Não foi possível abrir o caixa. O Caixa Anterior não foi fechado!');
+
+        $caixa = Caixa::create([
+            'users_id' => auth()->id(),
+            'data_caixa' => date(now()),
+            'saldo' => 0,
+            'status' => 1,
+            'saldo_inicial' => 0,
+        ]);
+        if ($caixa) {
+            return redirect()->back()->with('sucesso', 'Caixa Aberto com sucesso!');
         } else {
             return redirect()->back()->with('erro', 'Erro ao Abrir Caixa');
         }
@@ -132,12 +153,45 @@ class CaixaController extends Controller
         }
     }
 
+
+    public function fechar_store(Request $request)
+    {
+
+        $caixa = Caixa::all()->find($request->id);
+        $cash = str_replace(',', '.', str_replace('.', '', $request->cash));
+        $tpa = str_replace(',', '.', str_replace('.', '', $request->tpa));
+        $valor_total = $request->valor_total;
+
+
+        if ($caixa->status == 0)
+            return redirect()->back()->with('erro', 'O Caixa já está fechado!');
+
+        $meioPagamento = MeioPagamento::all();
+        foreach ($meioPagamento as $item) {
+            CaixaMeioPagamento::create([
+                'caixas_id' => $caixa->id,
+                'meios_pagamentos_id' => $item->id,
+                'valor' => $item->id == 1 ? $cash : $tpa,
+            ]);
+        }
+
+        $caixa->update([
+            'status' => 0,
+            'diferenca' => $valor_total - ($cash + $tpa),
+        ]);
+
+        return redirect()->route('caixas.index')->with('sucesso', 'Caixa Fechado com sucesso!');
+
+
+    }
+
     public function fechar(Request $request)
     {
         $caixa = Caixa::all()->find($request->id);
-        return $caixa;
-    }
 
+        return response()->json($caixa);
+
+    }
 
 
     public function listar()
@@ -150,10 +204,30 @@ class CaixaController extends Controller
                 'data_caixa',
                 'saldo_inicial',
                 'total',
+                'diferenca',
                 'status',
             ]);
 
         return DataTables::of($caixas)
             ->make(true);
+    }
+
+    public function relatorio_geral(Request $request)
+    {
+        //Gerar Relatório de caixa PDF
+        $caixas = DB::table('caixas')
+            ->join('users', 'users.id', 'caixas.users_id')
+            ->whereBetween('data_caixa', [$request->data1, $request->data2])
+        ->get([
+            '*',
+            'caixas.id as id',
+        ]);
+
+        $pdf = \PDF::loadView('report.relatorio_caixa', [
+            'caixas' => $caixas,
+            'request'=>$request
+        ]);
+        return $pdf->download('Relatorio_Caixa.pdf');
+
     }
 }
