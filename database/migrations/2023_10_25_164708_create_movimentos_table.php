@@ -14,15 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('movimentos', function (Blueprint $table) {
-            $table->integer('id', true);
+            $table->id();
             $table->decimal('debito', 10);
             $table->decimal('credito', 10);
             $table->string('razao', 445);
-            $table->integer('contas_id')->index('contas_id');
+            $table->foreignId('contas_id')->nullable()->constrained();
             $table->dateTime('data_operacao')->nullable()->useCurrent();
             $table->date('data_movimento')->nullable();
-            $table->integer('facturas_id')->nullable()->index('facturas_id');
-            $table->unsignedBigInteger('users_id')->nullable()->index('users_id');
+            $table->foreignId('registos_id')->nullable()->constrained();
+            $table->foreignId('users_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

@@ -57,7 +57,7 @@
 
         .conteudo {
             /** Altura do rodapé tem que ser igual a isso aqui e vice-versa **/
-            padding-bottom: {{$facturas->count() <=30? 360 : 0}}px;
+            padding-bottom: {{count($facturas) <=30? 360 : 0}}px;
             page-break-after: always;
         }
 
@@ -96,8 +96,8 @@
 
         <div class="text-left">
             @if($img)
-                <img src="/storage/'{{empresas()->logotipo_empresa}}" alt=""
-                     style="display: inline; width: 12%; position: absolute">
+                <img src="{{'storage/'.empresas()->logotipo_empresa}}" alt=""
+                     style="display: inline; width: 16%; position: absolute">
             @endif
 
         </div>
@@ -155,39 +155,20 @@
                 <th style="width: 10%; text-align: right">TOTAL</th>
             </tr>
 
-            @php
-                $total_geral = 0;
-                $tot_desconto = 0;
-                $retencao = 0;
-                $total = 0;
-                $desconto = 0;
-            @endphp
             @foreach($facturas as $row)
 
-                @php
-                    $p_unit = $row->punitario/1;
-
-                        $codigo_isencao = !is_null($row->codigo)? " [$row->codigo] " : "";
-                @endphp
-
-                @for($i=1; $i<= 1; $i++)
-                    <tr style="padding: 5px; font-size: 13px">
-                        <td>{{$row->id_servico}}</td>
-                        <td>{{str_contains($row->product, 'Serviço')? $row->servicos.$codigo_isencao.' - Ref. '.$factura->mes : $row->product.$codigo_isencao}}</td>
-                        <td class="text-center">{{$row->qtd}}</td>
-                        <td class="text-center">{{$row->unidade}}</td>
-                        <td style="text-align: right">{{formatar_moeda($p_unit)}}</td>
-                        <td class="text-center">{{$row->desconto}}</td>
-                        <td class="text-center">taxa</td>
-                        <td style="text-align: right">{{formatar_moeda( $p_unit * $row->qtd)}}</td>
-                    </tr>
-                @endfor
+                <tr style="padding: 5px; font-size: 13px">
+                    <td>{{$row['id']}}</td>
+                    <td>{{$row['product']}}</td>
+                    <td class="text-center">{{$row['qtd']}}</td>
+                    <td class="text-center">{{$row['unidade']}}</td>
+                    <td style="text-align: right">{{formatar_moeda($row['preco'])}}</td>
+                    <td class="text-center">{{$row['desconto']}}</td>
+                    <td class="text-center">taxa</td>
+                    <td style="text-align: right">{{formatar_moeda( $row['preco_total'])}}</td>
+                </tr>
 
             @endforeach
-
-            @php
-                $taxa = 0;
-            @endphp
 
         </table>
 
@@ -215,7 +196,7 @@
                     <tr>
                         <td>N/A</td>
                         <td>{{0}} %</td>
-                        <td>{{formatar_moeda($total)}}</td>
+                        <td>{{formatar_moeda($dados_finais['total'])}}</td>
                         <td>{{formatar_moeda(0)}} {{$factura->sigla_moeda}}</td>
                     </tr>
                 @endif
@@ -250,29 +231,29 @@
             <table border="1" width="100%" id="total_venda">
                 <tr>
                     <th>Total Ilíquido</th>
-                    <td> {{formatar_moeda($total)}} {{$factura->sigla_moeda}}</td>
+                    <td> {{$dados_finais['total']}} {{$factura->sigla_moeda}}</td>
                 </tr>
                 <tr>
                     <th>Total Descontos</th>
-                    <td>{{formatar_moeda($desconto)}} {{$factura->sigla_moeda}}</td>
+                    <td>{{$dados_finais['desconto']}} {{$factura->sigla_moeda}}</td>
                 </tr>
                 <tr>
                     <th>Imposto</th>
-                    <td>{{formatar_moeda($total*$taxa)}} {{$factura->sigla_moeda}}</td>
+                    <td>{{$dados_finais['imposto']}} {{$factura->sigla_moeda}}</td>
                 </tr>
                 <tr>
                     <th>0 %</th>
-                    <td>{{formatar_moeda($retencao)}} {{$factura->sigla_moeda}}</td>
+                    <td>{{$dados_finais['retencao']}} {{$factura->sigla_moeda}}</td>
                 </tr>
                 <tr>
                     <th>Total Documento</th>
-                    <td>{{number_format(($total-$desconto-$retencao+($total*$taxa)), '2', ',', '.')}} {{$factura->sigla_moeda}} </td>
+                    <td>{{$dados_finais['total_final']}} {{$factura->sigla_moeda}} </td>
                 </tr>
             </table>
 
             <div style="margin-top: 10px; margin-bottom: 20px" id="final">
                 <p style="color: darkblue; font-size: 6pt ">Valor
-                    Extenso: {{extenso(round($total-$desconto-$retencao+($total*$taxa), 2), $factura->moedas_id)}} </p>
+                    Extenso: {{extenso(round($dados_finais['total_final'], 2), $factura->moedas_id)}} </p>
 
                 <p style="color: darkblue; font-size: 6pt; margin-top: 10px ">{{$t == 'PP'? 'Este Documento Não Serve de Factura' : "Bens ou Serviços colocados a disposição do cliente a ".data_formatada($factura->data_emissao)." em Luanda."}} </p>
 

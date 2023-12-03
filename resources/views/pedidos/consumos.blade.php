@@ -76,22 +76,30 @@
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-primary">Consumos da Mesa - Nº {{$mesa->id}}</h1>
 
+        <div class="mt-2 mb-2">
+            <a class="btn btn-info" href="{{route('pedidos.abrir')}}"> Voltar</a>
+        </div>
 
         <div class="card shadow text-dark font-weight-bold mb-4">
 
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Novo Consumo</h6>
-
-
+                <h6 class="m-0 font-weight-bold text-primary">Consumos da Mesa - Nº {{$mesa->id}}</h6>
             </div>
 
             <div class="card-body">
 
                 <div class="container">
 
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+                    <div class="row mb-2 mx-0">
+                        <div class="col">
+                            <input autofocus class="form-control" type="search" placeholder="Pesquisar Produto por nome"
+                                   name="nome" id="pesquisar_by_nome">
+                        </div>
+                        <input type="hidden" value="{{$mesa->id}}" id="consumo_mesas_id">
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3 show_products">
 
                         <!-- Inicio Card -->
                         @foreach($produtos as $produto)
@@ -116,8 +124,12 @@
 
                                         </button>
                                         <div class="card-body">
+                                            <p style="font-size: 8pt" class="card-text text-danger">
+                                                Loja: {{$produto->shops->loja}}</p>
+
                                             <p style="font-size: 8pt" class="card-text text-primary">
                                                 Stock: {{$produto->qtd}}</p>
+
                                             <div class="d-flex justify-content-between align-items-center">
 
 
@@ -141,27 +153,30 @@
                                                 </div>
 
 
-
-
                                             </div>
                                             <div class="form-row mt-2">
                                                 <div class="form-group col-md-12">
                                                     <label for="">Para Cozinha </label>
                                                     <div class="form-control">
                                                         <div class="form-check form-check-inline">
-                                                            <input checked class="form-check-input" type="radio" name="cozinha"
+                                                            <input checked class="form-check-input" type="radio"
+                                                                   name="cozinha"
                                                                    id="inlineRadio1" value="0">
-                                                            <label class="form-check-label" for="inlineRadio1">Não</label>
+                                                            <label class="form-check-label"
+                                                                   for="inlineRadio1">Não</label>
                                                         </div>
                                                         <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="cozinha" id="inlineRadio2"
+                                                            <input class="form-check-input" type="radio" name="cozinha"
+                                                                   id="inlineRadio2"
                                                                    value="1">
-                                                            <label class="form-check-label" for="inlineRadio2">Sim</label>
+                                                            <label class="form-check-label"
+                                                                   for="inlineRadio2">Sim</label>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="form-group col-md-12">
-                                                    <input placeholder="Observação" class="form-control form-control-sm" name="obs"
+                                                    <input placeholder="Observação" class="form-control form-control-sm"
+                                                           name="obs"
                                                            type="text" value="">
                                                 </div>
 
@@ -178,6 +193,7 @@
 
 
                     </div>
+
                 </div>
 
                 @if(session('carrinho_pedidos'))
@@ -236,9 +252,6 @@
                 @endif
 
 
-                <div class="mt-3">
-                    <a class="btn btn-info" href="{{route('pedidos.abrir')}}"> Voltar</a>
-                </div>
             </div>
 
 
@@ -259,7 +272,28 @@
 
 
         $(function () {
+            $('#pesquisar_by_nome').keyup(function () {
+                var nome = $(this).val();
+                var mesas_id = $('#consumo_mesas_id').val()
+                $.ajax({
+                    url: '/pedidos/produtos/pesquisar',
+                    type: 'POST',
+                    data: {
+                        nome: nome,
+                        mesas_id:mesas_id,
+                        _token: $('input[name=_token]').val()
+                    },
+                    beforeSend: function () {
+                        //$('.show_products').css('opacity', '.5');
+                    },
+                    success: function (data) {
+                        //console.log(data);
+                        // $('.show_products').css('opacity', '');
+                        $('.show_products').html(data);
 
+                    }
+                })
+            })
         })
     </script>
 

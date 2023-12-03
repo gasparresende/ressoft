@@ -205,7 +205,7 @@ class CaixaController extends Controller
                 'saldo_inicial',
                 'total',
                 'diferenca',
-                'status',
+                'caixas.status',
             ]);
 
         return DataTables::of($caixas)

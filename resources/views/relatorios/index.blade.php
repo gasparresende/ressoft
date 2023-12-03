@@ -15,7 +15,6 @@
                     class="fa fa-history"></i></a>
             <a class="btn btn-dark" id="click_relatorio_vendas" href="#">Vendas<i class="fa fa-cart-plus"></i></a>
             <a class="btn btn-dark" id="click_relatorio_caixas" href="#">Caixa<i class="fa fa-cart-plus"></i></a>
-            <a class="btn btn-dark" id="click_relatorio_produtos" href="#">Produtos <i class="fa fa-dollar-sign"></i></a>
 
         </div>
 
@@ -72,26 +71,46 @@
 
                 <div id="relatorio_caixas" >
                     <h4 class="mb-3 text-primary">Relatório de Caixa</h4>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="">Utilizador</label>
-                            <select name="users_id" id="" class="form-control">
-                                <option value="">Selecione</option>
-                                @foreach($users as $user)
-                                    <option value="{{$user->id}}">{{$user->username}}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
-                        <div class="col-md-6">
-                            <label for="">Data</label>
-                            <input name="data" type="date" class="form-control">
-                        </div>
-                    </div>
-                    <div class="mt-3 text-right">
-                        <input class="btn btn-dark" type="submit" value="Gerar Relatório">
 
-                    </div>
+                    <form action="{{route('relatorios.caixas')}}" method="post">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="">Utilizador</label>
+                                <select name="users_id" id="" class="form-control">
+                                    <option value="">Selecione</option>
+                                    @foreach($users as $user)
+                                        <option value="{{$user->id}}">{{$user->username}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="">Loja</label>
+                                <select name="shops_id" id="" class="form-control">
+                                    <option value="">Selecione</option>
+                                    @foreach($lojas as $loja)
+                                        <option value="{{$loja->id}}">{{$loja->loja}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="">Data Inicial</label>
+                                <input required  value="{{data_formatada(now(), 'Y-m-d')}}" name="data1" type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="">Data Final</label>
+                                <input required name="data2"  value="{{data_formatada(now(), 'Y-m-d')}}"  type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="mt-3 text-right">
+                            <input class="btn btn-dark" type="submit" value="Gerar Relatório">
+
+                        </div>
+                    </form>
                 </div>
 
             </div>

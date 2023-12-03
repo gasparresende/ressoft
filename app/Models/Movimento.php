@@ -10,4 +10,19 @@ class Movimento extends Model implements Auditable
 {
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
+
+    protected $fillable = [
+        'debito',
+        'credito',
+        'razao',
+        'contas_id',
+        'data_operacao',
+        'data_movimento',
+        'registos_id',
+    ];
+
+    public function contas()
+    {
+        return $this->belongsTo(Contas::class);
+    }
 }

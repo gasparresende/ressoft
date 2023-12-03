@@ -102,7 +102,7 @@
                     <a class="collapse-item" href="{{route('roles.index')}}">Função</a>
                     <a class="collapse-item" href="{{route('permissions.index')}}">Permissão</a>
                     <a class="collapse-item" href="{{route('permissions_roles.index')}}">Permissão | Função</a>
-                    <a class="collapse-item" href="{{route('permissions_users.index')}}">Permissão | Users</a>
+                    <a class="collapse-item" href="{{route('permission_users.index')}}">Permissão | Users</a>
                     <a class="collapse-item" href="{{route('roles_users.index')}}">Função | Users</a>
                 </div>
             </div>

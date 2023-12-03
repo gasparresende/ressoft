@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
         $this->call(EmpresaSeeder::class); // Add this line
         $this->call(ContasBancariaEmpresasSeeder::class); // Add this line
         $this->call(CategoriaSeeder::class); // Add this line
+        $this->call(ImpostoSeeder::class);
+        $this->call(MoedaSeeder::class);
 
     }
 }

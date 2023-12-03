@@ -2,83 +2,112 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\user;
+use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\DataTables;
 
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the users
      *
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\User $model
+     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(User $model)
     {
-       return view('users.index');
+        return view('users.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(UserRequest $request)
     {
-        //
+
+        if ($request->password != "") {
+            $dados = [
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ];
+        } else {
+            $dados = [
+                'username' => $request->username,
+                'email' => $request->email,
+            ];
+        }
+
+        $inserir = DB::table('users')->updateOrInsert(['id' => $request->id], $dados);
+
+        if ($inserir)
+            return back()->with("sucesso", "Dados Salvo com sucesso!");
+        else
+            return back()->with("erro", "Erro ao Salvar");
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function reset(UserRequest $request)
     {
-        //
+
+        $dados = [
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+        ];
+
+        $reset = DB::table('users')->where('id', $request->id)->update($dados);
+
+        if ($reset)
+            return back()->with("sucesso", "Password Alterada com sucesso!");
+        else
+            return back()->with("erro", "Erro ao Alterar Password");
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        echo json_encode(DB::table('users')->where('id', $request->id)
+            ->get());
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function delete(Request $request)
     {
-        //
+
+        if (DB::table('users')->where('id', $request->id)->delete()) {
+            DB::statement("ALTER TABLE users AUTO_INCREMENT =  $request->id");
+            return redirect()->back()->with('sucesso', 'Dados eliminado com sucesso!!');
+        } else {
+            return redirect()->back()->with('erro', 'Erro ao eliminar');
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function listar()
     {
-        //
+        $users = DB::table('users')
+            ->where('status', 1)
+            ->select([
+                '*',
+            ]);
+
+
+        return DataTables::of($users)
+            ->make(true);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function update_image(Request $request)
     {
-        //
+
+        $user = User::all()->find(auth()->id());
+        if (!isset($request->foto_perfil))
+            return redirect()->back()->with('erro', 'Não foi carregada a Imagem');
+
+        $dir = 'users/' . auth()->id();
+        Storage::deleteDirectory($dir);
+        $upload = $request->file('foto_perfil')->store($dir);
+
+        $user->update(['foto_perfil' => $upload]);
+        return redirect()->back()->with('sucesso', 'Imagem Alterada com sucesso!');
+
+
     }
+
 }

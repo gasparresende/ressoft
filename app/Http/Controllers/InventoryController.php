@@ -109,7 +109,7 @@ class InventoryController extends Controller
 
             return redirect()->back()->with('erro', 'Erro ao adicionar produtos!')->withInput();
 
-        } elseif($request->tipo === '2') {
+        } elseif ($request->tipo === '2') {
             $count = 0;
             foreach ($request->products_id as $key => $products_id) {
 
@@ -150,8 +150,7 @@ class InventoryController extends Controller
                 return redirect()->route('inventories.index')->with('sucesso', 'Saída Registada com sucesso!');
 
             return redirect()->back()->with('erro', 'Erro ao Registar Saída!')->withInput();
-        }
-        else{
+        } else {
             $request['origem'] = $request->shops_id;
             $request['destino'] = $request->shops_id2;
             $request['data'] = now();
@@ -181,6 +180,30 @@ class InventoryController extends Controller
         }
     }
 
+    public function filtro(Request $request)
+    {
+        $inventories = Inventory::with('products', 'shops', 'sizes', 'colors', 'marcas', 'categorias', 'fornecedors');
+
+        if ($request->shops_id != 0) {
+            $inventories = $inventories->where('shops_id', $request->shops_id);
+        }
+
+        return json_encode($inventories->get());
+    }
+
+    public function by_name(Request $request)
+    {
+        $inventories = DB::table('inventories')
+            ->join('products', 'products.id', 'inventories.products_id')
+        ->where('product', 'LIKE', '%' . $request->product . '%');
+
+        if ($request->shops_id != 0) {
+            $inventories = $inventories->where('shops_id', $request->shops_id);
+
+        }
+        echo json_encode($inventories->get(['*', 'inventories.id as id']));
+    }
+
     public function exportar(Request $request)
     {
 
@@ -198,7 +221,7 @@ class InventoryController extends Controller
                 ])
             ->get();
 
-        if ($request->shops_id == '%'){
+        if ($request->shops_id == '%') {
             $inventories = DB::table('inventories')
                 ->join('products', 'products.id', 'inventories.products_id')
                 ->join('shops', 'shops.id', 'inventories.shops_id')
@@ -230,6 +253,7 @@ class InventoryController extends Controller
             return Excel::download(new InventoriesExport($dados), 'Inventories.xlsx');
         }
     }
+
     public function show(Inventory $inventory)
     {
         //if (Gate::denies('view'))

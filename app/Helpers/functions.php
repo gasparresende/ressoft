@@ -8,6 +8,275 @@ use phputil\extenso\Extenso;
 use Rawilk\Printing\Facades\Printing;
 
 
+function saldo_anterior_debito($contas_id, $data_inicio)
+{
+
+    $anterior = DB::table('contas')
+        ->join('movimentos', 'movimentos.contas_id', 'contas.id')
+        ->where('contas.id', $contas_id)
+        ->whereDate('data_movimento', '<', $data_inicio)
+        //->whereDate('data_movimento', '>=', '2020-12-31')
+        ->orderBy('data_movimento')->orderBy('movimentos.id')->get();
+
+    $d = 0;
+    $c = 0;
+
+    //dd($anterior->where('contas.id', 238)->get());
+    foreach ($anterior as $row) {
+        $d += $row->debito;
+        $c += $row->credito;
+    }
+
+    return $d;
+}
+
+function saldo_anterior_credito($contas_id, $data_inicio)
+{
+
+    $anterior = DB::table('contas')
+        ->join('movimentos', 'movimentos.contas_id', 'contas.id')
+        ->where('contas.id', $contas_id)
+        ->whereDate('data_movimento', '<', $data_inicio)
+        //->whereDate('data_movimento', '>=', '2020-12-31')
+        ->orderBy('data_movimento')->orderBy('movimentos.id')->get();
+
+    $d = 0;
+    $c = 0;
+
+    //dd($anterior->where('contas.id', 238)->get());
+    foreach ($anterior as $row) {
+        $d += $row->debito;
+        $c += $row->credito;
+    }
+
+    return $c;
+}
+
+function saldo_anterior($contas_id, $data_inicio)
+{
+
+    $anterior = DB::table('contas')
+        ->join('movimentos', 'movimentos.contas_id', 'contas.id')
+        ->where('contas.id', $contas_id)
+        ->whereDate('data_movimento', '<', $data_inicio)
+        //->whereDate('data_movimento', '>=', '2020-12-31')
+        ->orderBy('data_movimento')->orderBy('movimentos.id')->get();
+
+    $d = 0;
+    $c = 0;
+
+    //dd($anterior->where('contas.id', 238)->get());
+    foreach ($anterior as $row) {
+        $d += $row->debito;
+        $c += $row->credito;
+    }
+    $saldo_anterior = $d - $c;
+
+    return $saldo_anterior;
+}
+
+
+function saldo_contas_devedor($contas_id, $data1, $data2)
+{
+
+    $movimentos = DB::table('contas')
+        ->join('movimentos', 'movimentos.contas_id', 'contas.id')
+        ->where('contas.id', $contas_id)
+        ->whereBetween('data_movimento', [$data1, $data2])
+        ->orderBy('data_movimento')
+        ->orderBy('movimentos.id')
+        ->select(DB::raw(
+            '
+                *,
+                conta,
+                descricao,
+                SUM(debito) as tot_deb,
+                SUM(credito) as tot_cre
+                '
+        ))->get();
+
+    $saldo_devedor = 0;
+    foreach ($movimentos as $row) {
+        $deb = $row->tot_deb + saldo_anterior_debito($contas_id, $data1);
+        $cre = $row->tot_cre + saldo_anterior_credito($contas_id, $data1);
+
+        $saldo_devedor = ($deb > $cre) ? ($deb - $cre) : 0;
+    }
+    return $saldo_devedor;
+}
+
+function saldo_contas_credor($contas_id, $data1, $data2)
+{
+
+    $movimentos = DB::table('contas')
+        ->join('movimentos', 'movimentos.contas_id', 'contas.id')
+        ->where('contas.id', $contas_id)
+        ->whereBetween('data_movimento', [$data1, $data2])
+        ->orderBy('data_movimento')
+        ->orderBy('movimentos.id')
+        ->select(DB::raw(
+            '
+                *,
+                conta,
+                descricao,
+                SUM(debito) as tot_deb,
+                SUM(credito) as tot_cre
+                '
+        ))
+        ->get();
+
+    $saldo_credor = 0;
+    foreach ($movimentos as $row) {
+        $deb = $row->tot_deb + saldo_anterior_debito($contas_id, $data1);
+        $cre = $row->tot_cre + saldo_anterior_credito($contas_id, $data1);
+
+        $saldo_credor = ($deb > $cre) ? 0 : $cre - $deb;
+    }
+    return $saldo_credor;
+}
+
+//Contas de Resultado
+function saldo_contas_devedor2($contas_id, $data1, $data2)
+{
+
+    $movimentos = DB::table('contas')
+        ->join('movimentos', 'movimentos.contas_id', 'contas.id')
+        ->where('contas.id', $contas_id)
+        ->whereBetween('data_movimento', [$data1, $data2])
+        ->orderBy('data_movimento')
+        ->orderBy('movimentos.id')
+        ->select(DB::raw(
+            '
+                *,
+                conta,
+                descricao,
+                SUM(debito) as tot_deb,
+                SUM(credito) as tot_cre
+                '
+        ))->get();
+
+    $saldo_devedor = 0;
+    foreach ($movimentos as $row) {
+        $deb = $row->tot_deb;
+        $cre = $row->tot_cre;
+
+        $saldo_devedor = ($deb > $cre) ? ($deb - $cre) : 0;
+    }
+    return $saldo_devedor;
+}
+
+function saldo_contas_credor2($contas_id, $data1, $data2)
+{
+
+    $movimentos = DB::table('contas')
+        ->join('movimentos', 'movimentos.contas_id', 'contas.id')
+        ->where('contas.id', $contas_id)
+        ->whereBetween('data_movimento', [$data1, $data2])
+        ->orderBy('data_movimento')
+        ->orderBy('movimentos.id')
+        ->select(DB::raw(
+            '
+                *,
+                conta,
+                descricao,
+                SUM(debito) as tot_deb,
+                SUM(credito) as tot_cre
+                '
+        ))
+        ->get();
+
+    $saldo_credor = 0;
+    foreach ($movimentos as $row) {
+        $deb = $row->tot_deb;
+        $cre = $row->tot_cre;
+
+        $saldo_credor = ($deb > $cre) ? 0 : $cre - $deb;
+    }
+    return $saldo_credor;
+}
+
+function netProfit($data1, $data2)
+{
+
+
+    $res_proveitos = DB::table('contas')
+        ->join('movimentos', 'movimentos.contas_id', 'contas.id')
+        //->where('contas.id', $contas_id)
+        ->where('contas.tipo', 'Proveitos')
+        ->whereBetween('data_movimento', [$data1, $data2])
+        ->select(DB::raw(
+            '
+                *,
+                conta,
+                descricao,
+                SUM(debito) as tot_deb,
+                SUM(credito) as tot_cre
+                '
+        ))->get();
+
+    $vendas = 0;
+    foreach ($res_proveitos as $row) {
+        //$deb = $row->tot_deb + saldo_anterior_debito($row->contas_id, $data1);
+        //$cre = $row->tot_cre+ saldo_anterior_credito($row->contas_id, $data1);
+        $deb = $row->tot_deb;
+        $cre = $row->tot_cre;
+
+        #$saldo_devedor = ($deb > $cre) ? ($deb - $cre) : 0;
+        $vendas += abs($deb - $cre);
+    }
+
+
+    $custos = 0;
+    $contas2 = DB::table('contas')
+        ->orderBy('conta')
+        ->Where('tipo', 'Custos')
+        ->get();
+    foreach ($contas2 as $conta) {
+
+        $custos += saldo_contas_devedor2($conta->id, $data1, $data2);
+        //saldo_contas_credor($conta->id, $data1, $data2);
+    }
+
+    return $vendas - $custos;
+    #return $custos;
+
+
+}
+
+
+function netProfit2($data1, $data2)
+{
+    $res = DB::table('movimentos')
+        ->select(DB::raw(
+            '
+                *,
+                contas_id,
+                SUM(debito) as tot_deb,
+                SUM(credito) as tot_cre
+                '
+        ))
+        ->join('contas', 'contas.id', 'movimentos.contas_id')
+        ->where('conta', '>=', 60)
+        ->where('conta', '<=', 79)
+        ->whereBetween('data_movimento', [$data1, $data2])
+        ->groupBy('movimentos.contas_id')
+        ->orderBy('conta')
+        ->get();
+
+    $total_dev = 0;
+    $total_cre = 0;
+    foreach ($res as $dado) {
+
+        $saldo_devedor = ($dado->tot_deb > $dado->tot_cre) ? $dado->tot_deb - $dado->tot_cre : 0;
+        $saldo_credor = ($dado->tot_deb > $dado->tot_cre) ? 0 : $dado->tot_cre - $dado->tot_deb;
+
+        $total_dev += $saldo_devedor;
+        $total_cre += $saldo_credor;
+    }
+    return $total_cre - $total_dev;
+
+
+}
 function capitalizeNomeProprio($nome)
 {
     $partesNome = explode(" ", $nome);
@@ -47,7 +316,6 @@ function garcon($mesas_id)
     $status = DB::table('mesas')
         ->join('status_mesas', 'status_mesas.mesas_id', 'mesas.id')
         ->join('users', 'users.id', 'status_mesas.users_id')
-        ->limit(1)
         ->where('mesas.id', $mesas_id)->get();
 
     if ($status->isEmpty())
@@ -101,7 +369,7 @@ function empresas()
 {
     //return \App\Models\Empresas::all()->first();
     return \Illuminate\Support\Facades\DB::table('empresas')
-        ->join('contas_bancaria_empresas as cb', 'cb.empresas_id', 'empresas.id')->get()->first();
+        ->leftJoin('contas_bancaria_empresas as cb', 'cb.empresas_id', 'empresas.id')->get()->first();
 }
 
 function empresa()
@@ -173,7 +441,7 @@ function primeiro_ultimo($fullname)
 
 function isMovimento($id)
 {
-    return DB::table('razao')->where('facturas_id', $id)->limit(1)->get()->isNotEmpty();
+    return DB::table('movimentos')->where('facturas_id', $id)->limit(1)->get()->isNotEmpty();
 }
 
 
@@ -282,6 +550,25 @@ function loja()
     return $loja->isNotEmpty() ? $loja->first()->loja : null;
 }
 
+function getLojas($users_id=null)
+{
+    if($users_id==null)
+        $users_id = auth()->id();
+
+    $lojas = DB::table('users_shops')
+        ->join('users', 'users.id', 'users_shops.users_id')
+        ->join('shops', 'shops.id', 'users_shops.shops_id')
+        ->where('users.id', $users_id)
+        ->get();
+
+    $res = "";
+    foreach ($lojas as $loja) {
+        $res .= "[".$loja->loja."]";
+    }
+    if ($lojas->isEmpty())
+        $res = "Sem Loja";
+    return $res;
+}
 function caixa()
 {
     $caixa = DB::table('caixas')

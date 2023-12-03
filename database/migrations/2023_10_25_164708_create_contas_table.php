@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('contas', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->string('conta', 45)->unique('plano_de_contas_UNIQUE');
-            $table->string('descricao', 220);
+            $table->id();
+            $table->string('conta', 45)->unique();
+            $table->string('descricao', 220)->unique();
             $table->string('tipo', 45)->default('Activo');
             $table->timestamps();
         });

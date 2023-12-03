@@ -27,6 +27,33 @@ class PedidoController extends Controller
         return view('pedidos.index');
     }
 
+    public function pesquisar_produtos(Request $request)
+    {
+        $produtos = Inventory::with('products')->with('sizes')
+            ->with('colors')->with('categorias')->with('marcas')
+            ->whereHas('products', function ($query) use ($request) {
+                $query->where('product', 'like', '%' . $request->nome . '%');
+            })->get();
+
+        if (!auth()->user()->hasRole('Admin')) {
+            $shops_users = DB::table('users_shops')->where('users_id', auth()->id())->get();
+            $produtos = Inventory::with('products')->with('sizes')
+                ->with('colors')->with('categorias')->with('marcas')
+                ->whereIn('shops_id', $shops_users->pluck('shops_id'))
+                ->whereHas('products', function ($query) use ($request) {
+                    $query->where('product', 'like', '%' . $request->nome . '%');
+                })->get();
+
+        }
+        $mesa = Mesa::all()->find($request->mesas_id);
+
+        return view('pedidos.show_product_filter', [
+            'produtos' => $produtos,
+            'mesa' => $mesa,
+        ]);
+
+    }
+
     public function abrir()
     {
 
@@ -59,10 +86,11 @@ class PedidoController extends Controller
 
         if (!auth()->user()->hasRole('Admin')) {
             $shops_users = DB::table('users_shops')->where('users_id', auth()->id())->get();
-           $produtos = Inventory::with('products')->with('sizes')
+            $produtos = Inventory::with('products')->with('sizes')
                 ->with('colors')->with('categorias')->with('marcas')
                 ->where('qtd', '>', 0)
                 ->whereIn('shops_id', $shops_users->pluck('shops_id'))
+                ->take(6)
                 ->get();
         }
 

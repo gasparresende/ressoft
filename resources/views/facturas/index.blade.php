@@ -75,8 +75,8 @@
                     {
                         "render": function (data, type, row) {
                             return ``+
-                            `<a title="Factura Térmica"  class="btn btn-sm btn-outline-dark m-1" href="report/${row.id}/facturas/preview"> <i class="fas fa-print"></i></a>`+
-                            `<a title="Factura A4"  class="btn btn-sm btn-secondary m-1" href="report/${row.id}/facturas/termica"> <i class="fas fa-print"></i></a>`+
+                            `<a title="Factura Térmica"  class="btn btn-sm btn-outline-dark m-1" href="report/${row.id}/facturas/termica"> <i class="fas fa-print"></i></a>`+
+                            `<a title="Factura A4"  class="btn btn-sm btn-secondary m-1" href="report/${row.id}/facturas/preview"> <i class="fas fa-print"></i></a>`+
                                 `<a ${row.sigla == 'NC' || row.sigla == 'PP'? 'hidden' : ''} title="Nota de Crédito"  class="btn btn-sm btn-danger m-1" href="/nota_credito/${row.id}/create"> <i class="fas fa-ban"></i></a>`
                         }
                     }

@@ -3,27 +3,31 @@
 use App\Http\Controllers\AlunosController;
 use App\Http\Controllers\BalanceteController;
 use App\Http\Controllers\CaixaController;
+use App\Http\Controllers\CarrinhoCompraController;
 use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\CarrinhoMeioPagamentoController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContaController;
 use App\Http\Controllers\DespesaController;
 use App\Http\Controllers\EmpresaController;
+use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\IndividualController;
 use App\Http\Controllers\InpuProductController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MesaController;
+use App\Http\Controllers\MovimentoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PermissionsRoleController;
-use App\Http\Controllers\PermissionsUserController;
+use App\Http\Controllers\PermissionUserController;
 use App\Http\Controllers\PrecosController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\RolesUserController;
+use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SeleController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UrlController;
@@ -76,6 +80,7 @@ Route::post('/login', [UsersController::class, 'login'])->name('login');
 Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
 
 
+Route::post('relatorios/caixas', [RelatorioController::class, 'relatorio_caixa'])->name('relatorios.caixas');
 Route::post('relatorios/vendas', [RelatorioController::class, 'relatorio_venda'])->name('relatorios.vendas');
 Route::get('relatorios/cardapio', [RelatorioController::class, 'cardapio'])->name('relatorios.cardapio');
 
@@ -112,11 +117,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/carrinho/remover-todos', [CarrinhoController::class, 'remover_todos'])->name('carrinho.remover.todos');
     Route::post('/carrinho/recuperar', [CarrinhoController::class, 'recuperar'])->name('carrinho.recuperar');
 
+    //Carrinho Factura
+    Route::post('/carrinho/compra/adicionar', [CarrinhoCompraController::class, 'adicionar'])->name('carrinho.compra.adicionar');
+    Route::get('/carrinho/compra/{id}/remover', [CarrinhoCompraController::class, 'remover'])->name('carrinho.compra.remover');
+    Route::get('/carrinho/compra/remover-todos', [CarrinhoCompraController::class, 'remover_todos'])->name('carrinho.compra.remover-todos');
+    //Route::post('/carrinho/recuperar', [CarrinhoCompraController::class, 'recuperar'])->name('carrinho.recuperar');
+
     //Carrinho Meio de Pagamentos
     Route::post('/carrinho-meio-pagamentos/adicionar', [CarrinhoMeioPagamentoController::class, 'adicionar'])->name('carrinho_meio_pagamentos.adicionar');
     Route::get('/carrinho-meio-pagamentos/{id}/remover', [CarrinhoMeioPagamentoController::class, 'remover'])->name('carrinho_meio_pagamentos.remover');
     Route::get('/carrinho-meio-pagamentos/remover-todos', [CarrinhoMeioPagamentoController::class, 'remover_todos'])->name('carrinho_meio_pagamentos.remover.todos');
 
+    Route::get('/inventories/filtro/', [InventoryController::class, 'filtro'])->name('inventories.filtro');
+    Route::get('/inventories/by/name/', [InventoryController::class, 'by_name'])->name('inventories.by_name');
     Route::get('inventories/entradas', [InventoryController::class, 'entradas'])->name('inventories.entradas');
     Route::get('inventories/saidas', [InventoryController::class, 'saidas'])->name('inventories.saidas');
     Route::get('inventories/transferencias', [InventoryController::class, 'transferencias'])->name('inventories.transferencias');
@@ -153,20 +166,68 @@ Route::middleware(['auth'])->group(function () {
     //Relatorios
     Route::resource('/relatorios', RelatorioController::class);
 
+    //Contas
+    Route::get('/contas/listar', [ContaController::class, 'listar'])->name('contas.listar');
     Route::resource('/contas', ContaController::class);
-    Route::resource('/movimentos', ContaController::class);
+
+
+    //Movimentos
+    Route::get('movimentos/listar', [MovimentoController::class, 'listar'])->name('movimentos.listar');
+    Route::get('excel/exportar-movimentos', [ExcelController::class, 'export_movimentos'])->name('excel.exportar-movimentos');
+    Route::get('/movimentos/create-especifico', [MovimentoController::class, 'especifico'])->name('movimentos.create-especifico');
+    Route::post('/movimentos/store2', [MovimentoController::class, 'store2'])->name('movimentos.store2');
+    Route::resource('/movimentos', MovimentoController::class);
+
+
+    Route::get('excel/exportar-balancete', [ExcelController::class, 'export_balancete'])->name('excel.exportar-balancete');
     Route::resource('/balancetes', BalanceteController::class);
 
+    //Users
+    Route::get('/users/delete', [UserController::class, 'delete'])->name('users.delete');
+    Route::get('/users/listar', [UserController::class, 'listar'])->name('users.listar');
+    Route::post('/users/reset', [UserController::class, 'reset'])->name('users.reset');
+    Route::post('/users/update-image', [UserController::class, 'update_image'])->name('users.update_image');
     Route::resource('/users', UserController::class);
-    Route::resource('/roles', RoleController::class);
-    Route::resource('/permissions', PermissionController::class);
-    Route::resource('/permissions_roles', PermissionsRoleController::class);
-    Route::resource('/permissions_users', PermissionsUserController::class);
-    Route::resource('/roles_users', RolesUserController::class);
 
+    //Função
+    Route::get('/roles/delete', [RoleController::class, 'delete'])->name('roles.delete');
+    Route::get('/roles/listar', [RoleController::class, 'listar'])->name('roles.listar');
+    Route::resource('/roles', RoleController::class);
+
+    //Permissao
+    Route::get('/permissions/delete', [PermissionController::class, 'delete'])->name('permissions.delete');
+    Route::get('/permissions/listar', [PermissionController::class, 'listar'])->name('permissions.listar');
+    Route::resource('/permissions', PermissionController::class);
+
+    //Permissions Roles
+    Route::get('/permissions_roles/listarById', [PermissionsRoleController::class, 'listar_by_id'])->name('permissions_roles.listar_by_id');
+    Route::get('/permissions_roles/listar', [PermissionsRoleController::class, 'listar'])->name('permissions_roles.listar');
+    Route::get('/permissions_roles/delete', [PermissionsRoleController::class, 'delete'])->name('permissions_roles.delete');
+    Route::resource('/permissions_roles', PermissionsRoleController::class);
+
+    //Permissions Users
+    Route::get('/permission_users/listarById', [PermissionUserController::class, 'listar_by_id'])->name('permission_users.listar_by_id');
+    Route::get('/permission_users/listar', [PermissionUserController::class, 'listar'])->name('permission_users.listar');
+    Route::get('/permission_users/delete', [PermissionUserController::class, 'delete']);
+    Route::resource('/permission_users', PermissionUserController::class);
+
+    //Funcao users
+    Route::get('/roles_users/delete', [RoleUserController::class, 'delete']);
+    Route::get('/roles_users/listar', [RoleUserController::class, 'listar'])->name('roles_users.listar');
+    Route::get('/roles_users/listarById', [RoleUserController::class, 'listar_by_id'])->name('roles_users.listar_by_id');
+    Route::resource('/roles_users', RoleUserController::class);
+
+    //Empresas
+    Route::get('empresas/listar', [EmpresaController::class, 'listar'])->name('empresas.listar');
     Route::resource('/empresas', EmpresaController::class);
 
+    //Clientes
+    Route::get('clientes/delete', [ClienteController::class, 'delete'])->name('clientes.delete');
+    Route::get('clientes/listar', [ClienteController::class, 'listar'])->name('clientes.listar');
+    Route::resource('/clientes', ClienteController::class);
+
     //Route::get('/pedidos/adicionar/{mesa}/{inventory}/cart', [PedidoController::class, 'adicionar_cart'])->name('pedidos.adicionar.cart');
+    Route::post('/pedidos/produtos/pesquisar', [PedidoController::class, 'pesquisar_produtos'])->name('pedidos.produtos.pesquisar');
     Route::post('/pedidos/adicionar/{mesa}/cart', [PedidoController::class, 'adicionar_cart'])->name('pedidos.adicionar.cart');
     Route::get('/pedidos/cart/remover-all', [PedidoController::class, 'remover_all'])->name('pedidos.cart.remover.all');
     Route::get('/pedidos/cart/remover', [PedidoController::class, 'remover'])->name('pedidos.cart.remover');
@@ -180,6 +241,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pedidos/finalizar/{mesa}/{total}', [PedidoController::class, 'finalizar'])->name('pedidos.finalizar');
     Route::resource('/pedidos', PedidoController::class);
 
+    Route::get('/facturas/finalizar', [FacturaController::class, 'finalizar'])->name('facturas.finalizar');
     Route::get('/factura/{id}/qrcode/', [FacturaController::class, 'factura_hash'])->name('factura.qrcode');
     Route::get('/report/{id}/facturas/preview', [FacturaController::class, 'preview_facturas'])->name('report.facturas.preview');
     Route::get('/report/{id}/facturas/termica', [FacturaController::class, 'preview_termica'])->name('report.facturas.termica');
@@ -394,6 +456,8 @@ Route::get('/permissao_role', function () {
     echo "Nenhuma permissão nova";
 });
 
+
+
 Route::get('/user_permission', function () {
 
     $user = User::all()->find(auth()->id());
@@ -413,6 +477,8 @@ Route::get('/user_role', function () {
     $user->assignRole('Gerente'); //Atribuir Role ao usuario
     echo "feito";
 });
+
+
 
 
 Route::fallback(function () {

@@ -32,6 +32,8 @@
 
     <!--    Vizibilidade de botoes-->
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"/>
+    <link rel="shortcut icon" type="imagex/png" href="img/log_softter.png">
+
     @yield('css')
 
     <style>
@@ -118,7 +120,7 @@
                         @endcan
 
                         @can('permissao_users')
-                            <a class="collapse-item" href="{{route('permissions_users.index')}}">Permissão | Users</a>
+                            <a class="collapse-item" href="{{route('permission_users.index')}}">Permissão | Users</a>
                         @endcan
 
                         @can('funcao_users')
@@ -140,6 +142,10 @@
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                      data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
+
+                        @can('clientes')
+                            <a class="collapse-item" href="{{route('clientes.index')}}">Clientes</a>
+                        @endcan
 
                         @can('empresas')
                             <a class="collapse-item" href="{{route('empresas.index')}}">Empresas</a>
@@ -390,8 +396,8 @@
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">
-                  {{ auth()->user()->username }} | <span class="font-weight-bold text-primary">{{ loja() }} </span>
-                    | <span class="font-weight-bold text-danger">{{auth()->user()->getRoleNames()}}</span>
+                  {{ auth()->user()->username }} | <span class="font-weight-bold text-primary">{{ getLojas() }} </span>
+                    | <span class="font-weight-bold text-danger">{{auth()->user()->getRoleNames() }}</span>
                 </span>
                                 <img class="img-profile rounded-circle"
                                      src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
@@ -526,6 +532,8 @@
 {{--Eliminar--}}
 <script src="{{ asset("js/eliminar.js") }}" type="text/javascript"></script>
 <script src="{{ asset("js/xhttp.js") }}" type="text/javascript"></script>
+<script src="{{ asset("js/mensagens.js") }}" type="text/javascript"></script>
+
 
 
 <script>

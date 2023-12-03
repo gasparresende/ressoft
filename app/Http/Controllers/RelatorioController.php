@@ -87,5 +87,41 @@ class RelatorioController extends Controller
         return $pdf->download('Relatorio_Venda.pdf');
     }
 
+    public function relatorio_caixa(Request $request)
+    {
+        //Gerar Relatórios de Venda PDF
+        //Gerar Relatório de caixa PDF
+        $caixas = DB::table('caixas')
+            ->join('users', 'users.id', 'caixas.users_id')
+            ->leftJoin('users_shops', 'users_shops.users_id', 'users.id')
+            ->whereBetween('data_caixa', [$request->data1, $request->data2])
+            ->get([
+                '*',
+                'caixas.id as id',
+            ]);
+
+        if ($request->users_id != null) {
+            $caixas = $caixas->where('users_id', $request->users_id);
+        }
+
+        if ($request->shops_id != null) {
+            $caixas = $caixas->where('shops_id', $request->shops_id);
+        }
+
+        $total = 0;
+        foreach ($caixas as $caixa) {
+            $total += $caixa->total;
+        }
+
+
+        $pdf = \PDF::loadView('report.relatorio_caixa', [
+            'caixas' => $caixas,
+            'request'=>$request,
+            'total'=>$total
+        ]);
+        return $pdf->download('Relatorio_Caixa.pdf');
+
+    }
+
 
 }
